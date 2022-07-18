@@ -6,7 +6,7 @@ import StakedNFTCard from '../components/StakedNFTCard';
 import { claimRewardAll } from '../contexts/transaction';
 import { getGlobalData, getUnstakedNFTs, getUserPoolData } from '../services/fetchData';
 import { TFunction } from 'react-i18next';
-import { Breakpoint, Container, Grid, Paper } from '@mui/material';
+import { Box, Breakpoint, Container, Grid, Paper } from '@mui/material';
 import { ColorButton } from '../components/ColorButton';
 import { TemplateItem } from '../components/TemplateItem';
 import { fields } from '../configs/dashboard'
@@ -59,57 +59,59 @@ export default function HomePage(props: {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [wallet.connected]);
   return (
-    <Container maxWidth={maxWidth} className={className} sx={sx}>
-      <TemplateItem items={items} pipe={{ startLoading, closeLoading, t, theme, dataModel, userStakedCount, rewardAmount }}></TemplateItem>
-      <Paper elevation={0}>
-        <Grid container sx={{ justifyContent: 'flex-end', py: 2 }}>
-          <Grid item>
-            <ColorButton colorname='yellow' variant='contained' onClick={() => handleClaimAll()} sx={{
-              borderRadius: 5000,
-              textTransform: 'none'
-            }}>
-              {t('ACTIONS.CLAIM_ALL')} ({(rewardAmount).toLocaleString()} {t('TOKEN.NAME')})
-            </ColorButton>
+    <Box className={className} sx={sx}>
+      <Container maxWidth={maxWidth}>
+        <TemplateItem items={items} pipe={{ startLoading, closeLoading, t, theme, dataModel, userStakedCount, rewardAmount }}></TemplateItem>
+        <Paper elevation={0}>
+          <Grid container sx={{ justifyContent: 'flex-end', py: 2 }}>
+            <Grid item>
+              <ColorButton colorname='yellow' variant='contained' onClick={() => handleClaimAll()} sx={{
+                borderRadius: 5000,
+                textTransform: 'none'
+              }}>
+                {t('ACTIONS.CLAIM_ALL')} ({(rewardAmount).toLocaleString()} {t('TOKEN.NAME')})
+              </ColorButton>
+            </Grid>
           </Grid>
-        </Grid>
-      </Paper>
-      {nftList && nftList.length > 0 && <Grid container spacing={2}>
-        {
-          map(nftList, (item: any, key: number) => (
-            <Grid key={`nft_grid_${key}`} item xs={12} md={6} lg={3}>
-              <NFTCard
-                mint={item.mintAddress}
-                role={item.role}
+        </Paper>
+        {nftList && nftList.length > 0 && <Grid container spacing={2}>
+          {
+            map(nftList, (item: any, key: number) => (
+              <Grid key={`nft_grid_${key}`} item xs={12} md={6} lg={3}>
+                <NFTCard
+                  mint={item.mintAddress}
+                  role={item.role}
+                  key={key}
+                  startLoading={() => startLoading()}
+                  closeLoading={() => closeLoading()}
+                  updatePage={() => updatePage()}
+                  t={t}
+                />
+              </Grid>
+            ))
+          }
+        </Grid>}
+        {stakedNfts && stakedNfts.length > 0 && <Grid container spacing={2}>
+          {map(stakedNfts, (item: StakedNFT, key: number) => (
+            <Grid key={`staked_nft_grid_${key}`} item xs={12} md={6} lg={3}>
+              <StakedNFTCard
                 key={key}
+                lockTime={item.lockTime}
+                model={item.model}
+                mint={item.nftAddress}
+                rate={item.rate}
+                rewardTime={item.rewardTime}
+                stakedTime={item.stakedTime}
                 startLoading={() => startLoading()}
                 closeLoading={() => closeLoading()}
                 updatePage={() => updatePage()}
                 t={t}
               />
             </Grid>
-          ))
-        }
-      </Grid>}
-      {stakedNfts && stakedNfts.length > 0 && <Grid container spacing={2}>
-        {map(stakedNfts, (item: StakedNFT, key: number) => (
-          <Grid key={`staked_nft_grid_${key}`} item xs={12} md={6} lg={3}>
-            <StakedNFTCard
-              key={key}
-              lockTime={item.lockTime}
-              model={item.model}
-              mint={item.nftAddress}
-              rate={item.rate}
-              rewardTime={item.rewardTime}
-              stakedTime={item.stakedTime}
-              startLoading={() => startLoading()}
-              closeLoading={() => closeLoading()}
-              updatePage={() => updatePage()}
-              t={t}
-            />
-          </Grid>
-        ))}
-      </Grid>}
-    </Container>
+          ))}
+        </Grid>}
+      </Container>
+    </Box>
   )
 }
 

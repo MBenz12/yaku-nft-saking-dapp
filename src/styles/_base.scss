@@ -34,40 +34,13 @@ body {
 }
 
 .dashboard-container {
-    height: calc(100vh - $header-height);
+    min-height: calc(100vh - $header-height);
 }
 
 .MuiTypography-root {
     font-family: $font-main !important;
 }
 
-.nft-card {
-    width: calc(33.33% - 62px);
-    margin: 15px;
-    border: 1px solid #ccc;
-    padding: 15px;
-    .media {
-        width: 100%;
-    }
-    img {
-        width: 100%;
-        object-fit: cover;
-    }
-}
-.btn-primary {
-    padding: 5px 10px;
-    font-size: 16px;
-    font-weight: bold;
-    text-transform: uppercase;
-    margin-right: 5px;
-    margin-left: 5px;
-    &:first-child {
-        margin-left: 0;
-    }
-    &:last-child {
-        margin-right: 0;
-    }
-}
 .dialog-content {
     padding: 40px 20px;
     position: relative;
@@ -91,14 +64,4 @@ body {
 .align-center {
     text-align: center;
     margin-top: 10px;
-}
-.card-info {
-    span {
-        font-size: 14px;
-    }
-}
-.btn-claim {
-    padding: 10px 30px;
-    font-weight: bold;
-    font-size: 18px;
 }

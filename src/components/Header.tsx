@@ -17,11 +17,11 @@ export default function Header(props: {
   const { position, color, maxWidth, disableGutters, items, t, theme, colorMode, config } = props;
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
   return (
-    <AppBar position={position} color={color}>
-      <Container maxWidth={maxWidth} sx={{
-        bgcolor: 'background.default',
-        color: 'text.primary',
-      }}>
+    <AppBar position={position} color={color} sx={{
+      backgroundColor: 'background.default',
+      color: 'text.primary',
+    }}>
+      <Container maxWidth={maxWidth}>
         <Toolbar disableGutters={disableGutters}>
           <TemplateItem items={items} pipe={{ anchorElNav, setAnchorElNav, t, theme, colorMode, config }}></TemplateItem>
         </Toolbar>

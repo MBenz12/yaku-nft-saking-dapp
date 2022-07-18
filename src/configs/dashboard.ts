@@ -25,8 +25,8 @@ export const dashboard = {
   maxWidth: 'xl',
   className: 'dashboard-container',
   sx: {
-    p: 4, 
-    bgcolor: 'background.default',
+    p: 4,
+    backgroundColor: 'background.default',
     color: 'text.primary',
   },
   items: [{
