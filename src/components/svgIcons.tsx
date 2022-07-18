@@ -69,3 +69,20 @@ export const BackIcon = (props: { color?: string }) => {
         </svg>
     )
 }
+
+export const Icons: any = ({ icon, color }: { icon: string, color?: string }) => {
+    const icons: any = {
+        DiscordIcon,
+        TwitterIcon,
+        MenuIcon,
+        CloseIcon,
+        PastIcon,
+        ClipboardIcon,
+        BackIcon,
+    };
+    if (!icon || !icons[icon]) {
+      return <></>
+    }
+    const Icon = icons[icon];
+    return <Icon color={color}></Icon>
+}

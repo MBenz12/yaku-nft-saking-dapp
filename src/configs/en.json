@@ -1,6 +1,10 @@
 {
   "lang": "en",
   "translation": {
+    "TITLE": "White Label Staking",
+    "STAKING": {
+      "TITLE": "Staking"
+    },
     "TOKEN": {
       "NAME": "COSMIC"
     },

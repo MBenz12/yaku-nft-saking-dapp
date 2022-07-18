@@ -101,7 +101,7 @@ export default function HomePage(props: { startLoading: Function, closeLoading: 
             </button>
           </div>
           <div className="create-list">
-            {nftList && nftList.length !== 0 &&
+            {nftList && nftList.length &&
               nftList.map((item: any, key: number) => (
                 <NFTCard
                   mint={item.mintAddress}
