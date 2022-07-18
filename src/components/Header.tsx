@@ -1,12 +1,6 @@
 import { AppBar, Breakpoint, Container, Toolbar } from '@mui/material';
-import {
-  WalletModalProvider,
-  WalletMultiButton,
-} from '@solana/wallet-adapter-react-ui';
-import Link from 'next/link';
 import { useState } from 'react';
 import { TFunction } from 'react-i18next';
-import { DiscordIcon, TwitterIcon } from './svgIcons';
 import { TemplateItem } from './TemplateItem';
 
 export default function Header(props: {
@@ -27,27 +21,5 @@ export default function Header(props: {
         </Toolbar>
       </Container>
     </AppBar>
-    // <header className='header'>
-    //     <div className='header-content'>
-    //     <div className='header-left'></div>
-    //     <div className='header-center'></div>
-    //     <div className='header-right'>
-    //         <Link href='https://twitter.com/****'>
-    //         <a className='social-link'>
-    //             <TwitterIcon />
-    //         </a>
-    //         </Link>
-    //         <Link href='https://discord.com/****'>
-    //         <a className='social-link' style={{ marginRight: 20 }}>
-    //             <DiscordIcon />
-    //         </a>
-    //         </Link>
-    //         <WalletModalProvider>
-    //         <WalletMultiButton />
-    //         </WalletModalProvider>
-    //     </div>
-    //     </div>
-    //     <div className='header-wallet'></div>
-    // </header>
   );
 }

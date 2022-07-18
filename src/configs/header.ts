@@ -70,38 +70,46 @@ export const header = {
       ],
     },
     {
-      type: 'box',
-      sx: {
-        flexGrow: 1,
-      },
-      items: []
-    },
-    {
-      type: 'box',
-      sx: {
-        flexGrow: 0,
-      },
-      items: [{
-        type: 'link',
-        icon: 'TwitterIcon',
-        iconColor: 'grey',
-        sx: {
-          textDecoration: 'none',
-          mr: 2,
+      type: 'grid',
+      spacing: 2,
+      items: [
+        {
+          type: 'gridItem',
+          xs: 6,
         },
-        href: 'https://twitter.com/****'
-      }, {
-        type: 'link',
-        icon: 'DiscordIcon',
-        iconColor: 'grey',
-        sx: {
-          textDecoration: 'none',
-          mr: 2,
-        },
-        href: 'https://discord.com/****'
-      }, {
-        type: 'wallet'
-      }]
+        {
+          type: 'gridItem',
+          xs: 6,
+          sx: {
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'flex-end'
+          },
+          items: [{
+            type: 'link',
+            icon: 'TwitterIcon',
+            iconColor: 'grey',
+            sx: {
+              textDecoration: 'none',
+              mr: 2,
+              verticalAlign: 'middle'
+            },
+            href: 'https://twitter.com/****'
+          }, {
+            type: 'link',
+            icon: 'DiscordIcon',
+            iconColor: 'grey',
+            sx: {
+              textDecoration: 'none',
+              mr: 2,
+              verticalAlign: 'middle'
+            },
+            href: 'https://discord.com/****'
+          }, {
+            type: 'wallet',
+          }]
+        }
+      ]
     }
   ],
 };
