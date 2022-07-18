@@ -95,6 +95,11 @@ export const header = {
             justifyContent: 'flex-end'
           },
           items: [{
+            type: 'toggleColorButton',
+            sx: {
+              mr: 2,
+            },
+          }, {
             type: 'link',
             icon: 'TwitterIcon',
             iconColor: 'grey',

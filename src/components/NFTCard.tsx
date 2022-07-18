@@ -8,7 +8,7 @@ import {
 import { useWallet } from '@solana/wallet-adapter-react';
 import { PublicKey } from '@solana/web3.js';
 import Image from 'mui-image';
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { TFunction } from 'react-i18next';
 import { stakeNft } from '../contexts/transaction';
 import { getNftMetaData } from '../contexts/utils';
@@ -45,6 +45,7 @@ export default function NFTCard(props: {
         buttons: [{
           type: 'button',
           label: 'ACTIONS.STAKE',
+          color: 'primary',
           onClick: () => setDialog(true)
         }]
       }])

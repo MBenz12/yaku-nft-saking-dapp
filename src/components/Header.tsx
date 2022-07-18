@@ -9,15 +9,17 @@ export default function Header(props: {
   maxWidth?: Breakpoint,
   disableGutters?: boolean,
   items: any,
-  t: TFunction
+  t: TFunction,
+  theme: any,
+  colorMode: any,
 }) {
-  const { position, color, maxWidth, disableGutters, items, t } = props;
+  const { position, color, maxWidth, disableGutters, items, t, theme, colorMode } = props;
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
   return (
     <AppBar position={position} color={color}>
       <Container maxWidth={maxWidth}>
         <Toolbar disableGutters={disableGutters}>
-          <TemplateItem items={items} pipe={{ anchorElNav, setAnchorElNav, t }}></TemplateItem>
+          <TemplateItem items={items} pipe={{ anchorElNav, setAnchorElNav, t, theme, colorMode }}></TemplateItem>
         </Toolbar>
       </Container>
     </AppBar>

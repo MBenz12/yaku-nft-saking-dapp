@@ -1,3 +1,6 @@
+import Brightness4Icon from '@mui/icons-material/Brightness4';
+import Brightness7Icon from '@mui/icons-material/Brightness7';
+
 export const DiscordIcon = (props: { color?: string }) => {
     return (
         <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -79,6 +82,8 @@ export const Icons: any = ({ icon, color }: { icon: string, color?: string }) =>
         PastIcon,
         ClipboardIcon,
         BackIcon,
+        Brightness4Icon,
+        Brightness7Icon
     };
     if (!icon || !icons[icon]) {
       return <></>
