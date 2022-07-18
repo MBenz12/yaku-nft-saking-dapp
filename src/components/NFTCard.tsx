@@ -13,7 +13,7 @@ import Image from 'mui-image';
 import { useEffect, useState } from 'react';
 import { TFunction } from 'react-i18next';
 import { stakeNft } from '../contexts/transaction';
-import { getNftMetaData } from '../contexts/utils';
+import { getNFTdetail } from '../services/fetchData';
 import { TemplateItem } from './TemplateItem';
 
 export default function NFTCard(props: {
@@ -27,48 +27,11 @@ export default function NFTCard(props: {
   const theme = useTheme();
   const [image, setImage] = useState<string>('');
   const [name, setName] = useState<string>('');
-  const [items, setItems] = useState<any>([{
-  }]);
+  const [items, setItems] = useState<any>([{}]);
   const [dialog, setDialog] = useState(false);
 
-  const getNFTdetail = async () => {
-    try {
-      const uri = await getNftMetaData(new PublicKey(props.mint));
-      const resp = await fetch(uri);
-      const json = await resp.json();
-      setImage(json.image);
-      setName(json.name);
-      setItems([{
-        type: 'card',
-        alt: '',
-        showLoading: true,
-        image: json.image,
-        src: json.image,
-        title: json.name,
-        sx: {
-          borderRadius: 4,
-        },
-        buttons: [{
-          type: 'button',
-          label: 'ACTIONS.STAKE',
-          color: 'primary',
-          variant: 'outlined',
-          sx: {
-            marginLeft: 'auto',
-            borderRadius: 5000,
-            fontWeight: 700,
-            textTransform: 'none'
-          },
-          onClick: () => setDialog(true)
-        }]
-      }])
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   useEffect(() => {
-    getNFTdetail();
+    getNFTdetail(props, { setImage, setName, setItems, setDialog });
     // eslint-disable-next-line
   }, []);
 

@@ -1,12 +1,13 @@
 import { WalletContextState } from "@solana/wallet-adapter-react";
 import { getParsedNftAccountsByOwner } from "@nfteyez/sol-rayz";
 import { NFT_CREATOR } from "../config";
-import { solConnection } from "../contexts/utils";
+import { getNftMetaData, solConnection } from "../contexts/utils";
 import { Dispatch, SetStateAction } from "react";
 import { each, Promise } from 'bluebird';
 import { get, set, isFunction, cloneDeep } from "lodash";
 import { calculateAllRewards, getGlobalState, getUserPoolState } from "../contexts/transaction";
-import { LAMPORTS_PER_SOL } from "@solana/web3.js";
+import { LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
+import { nftCard, stakedNftCard } from "../configs/nftCard";
 
 export const getUnstakedNFTs = async (props: {
   wallet: WalletContextState,
@@ -89,3 +90,18 @@ export const getUserPoolData = async (props: {
   }
   closeLoading();
 }
+
+export const getNFTdetail = async (props: any, { setImage, setName, setItems, setDialog, handleUnstake, handleClaim }: any) => {
+  try {
+    const { mint, stakedTime } = props;
+    const uri = await getNftMetaData(new PublicKey(mint));
+    const resp = await fetch(uri);
+    const json = await resp.json();
+    setImage(json.image);
+    setName(json.name);
+    const template = stakedTime ? stakedNftCard : nftCard;
+    setItems([template({ ...props, ...json }, { setDialog, handleUnstake, handleClaim })])
+  } catch (error) {
+    console.log(error);
+  }
+};

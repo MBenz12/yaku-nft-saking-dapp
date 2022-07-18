@@ -1,4 +1,4 @@
-import { Box, Button, Card, CardActions, CardContent, CardMedia, Grid, IconButton, Link, Menu, MenuItem, Paper, Typography } from '@mui/material';
+import { Box, Button, Card, CardActions, CardContent, CardMedia, Chip, Grid, IconButton, Link, Menu, MenuItem, Paper, Typography } from '@mui/material';
 import { Container } from '@mui/system';
 import { WalletDialogProvider, WalletMultiButton } from '@solana/wallet-adapter-material-ui';
 import { get, map, isFunction } from 'lodash';
@@ -35,10 +35,7 @@ export function TemplateItem(props: any) {
                   label: title,
                   variant: 'h6'
                 }]} pipe={pipe}></TemplateItem>}
-                {description && <TemplateItem items={[{
-                  type: 'typography',
-                  label: description
-                }]} pipe={pipe}></TemplateItem>}
+                {description && <TemplateItem items={description} pipe={pipe}></TemplateItem>}
               </CardContent>
               <CardActions>
                 <TemplateItem items={buttons} pipe={pipe}></TemplateItem>
@@ -80,6 +77,9 @@ export function TemplateItem(props: any) {
           case 'typography':
             const { label: typoLabel, ...typoProps } = otherProps;
             return <Typography key={key} {...typoProps}>{t(isFunction(typoLabel) ? typoLabel(pipe) : typoLabel)}</Typography>;
+          case 'chip':
+            const { label: chipLabel, ...chipProps } = otherProps;
+            return <Chip label={t(isFunction(chipLabel) ? chipLabel(pipe) : chipLabel)} {...chipProps}></Chip>
           case 'button':
             const { label: buttonLabel, onClick: onButtonClick, ...buttonProps } = otherProps;
             return <Button key={key} onClick={(event) => onButtonClick(event, pipe)} {...buttonProps}>{t(buttonLabel)}</Button>

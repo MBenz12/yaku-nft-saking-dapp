@@ -12,7 +12,7 @@
       "STAKE": "Stake",
       "UNSTAKE": "Unstake",
       "CLAIM": "Claim",
-      "CLAIM_ALL": "Claim All"
+      "CLAIM_ALL": "💰 Claim All"
     },
     "RATES": {
       "ADVENTURE": "Adventure Rate",
@@ -21,10 +21,15 @@
       "SPECIALIST": "Specialist Rate",
       "COMMANDER": "Commander Rate",
       "NORMAL": "Normal Rate",
-      "TOTAL_AMOUNT": "Total Amount"
+      "TOTAL_AMOUNT": "Total Staked"
     },
     "DASHBOARD": {
       "STAKED_NFT_COUNT": "Your staked nfts"
+    },
+    "DESCRIPTION": {
+      "MODEL": "Model",
+      "RATE": "Rate",
+      "STAKED_TIME": "Staked Time"
     }
   }
 }

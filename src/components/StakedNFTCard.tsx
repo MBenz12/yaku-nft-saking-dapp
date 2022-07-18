@@ -1,10 +1,12 @@
-import { useWallet } from "@solana/wallet-adapter-react";
-import { LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
-import moment from "moment";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { TFunction } from "react-i18next";
-import { claimReward, withdrawNft } from "../contexts/transaction";
-import { getNftMetaData } from "../contexts/utils";
+import { useTheme } from '@mui/material';
+import { useWallet } from '@solana/wallet-adapter-react';
+import { LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
+import moment from 'moment';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { TFunction } from 'react-i18next';
+import { claimReward, withdrawNft } from '../contexts/transaction';
+import { getNFTdetail } from '../services/fetchData';
+import { TemplateItem } from './TemplateItem';
 
 export default function StakedNFTCard(props: {
   mint: string,
@@ -18,23 +20,11 @@ export default function StakedNFTCard(props: {
   updatePage: Function,
   t: TFunction,
 }) {
-  const [image, setImage] = useState("");
-  const [name, setName] = useState("");
+  const theme = useTheme();
+  const [image, setImage] = useState('');
+  const [name, setName] = useState('');
+  const [items, setItems] = useState<any>([{}]);
   const wallet = useWallet();
-
-  const getNFTdetail = async () => {
-    const uri = await getNftMetaData(new PublicKey(props.mint))
-    await fetch(uri)
-      .then(resp =>
-        resp.json()
-      ).then((json) => {
-        setImage(json.image);
-        setName(json.name);
-      })
-      .catch((error) => {
-        console.log(error)
-      })
-  }
 
   const handleUnstake = async () => {
     try {
@@ -66,49 +56,10 @@ export default function StakedNFTCard(props: {
   }
 
   useEffect(() => {
-    getNFTdetail();
+    getNFTdetail(props, { setImage, setName, setItems, handleUnstake, handleClaim });
     // eslint-disable-next-line
   }, [])
-
-
-  // for image layout
-  const cardRef = useRef<HTMLDivElement>(null);
-  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
-
-  useLayoutEffect(() => {
-    if (cardRef.current) {
-      setDimensions({
-        width: cardRef.current.offsetWidth,
-        height: cardRef.current.offsetHeight
-      });
-    }
-  }, []);
   return (
-    <div className="nft-card">
-      <div className="nft-card-content">
-        <div className="media" ref={cardRef}>
-          {/* eslint-disable-next-line */}
-          <img
-            src={image}
-            style={{ height: dimensions.width }}
-            alt=""
-          />
-          <div className="card-content">
-            <p style={{ fontWeight: "bold" }}>{name}</p>
-            <p className="card-info"><span>Model:</span> {props.model}</p>
-            <p className="card-info"><span>Rate:</span> {props.rate / LAMPORTS_PER_SOL}</p>
-            <p className="card-info"><span>StakedTime:</span> {moment(props.stakedTime * 1000).format()}</p>
-            <div className="align-center">
-              <button className="btn-primary" onClick={() => handleUnstake()}>
-                unstake
-              </button>
-              <button className="btn-primary" onClick={() => handleClaim()}>
-                claim
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <TemplateItem key='stakedNftCard' items={items} pipe={{ t: props.t, theme }}></TemplateItem>
   )
 }

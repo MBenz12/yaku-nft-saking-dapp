@@ -52,9 +52,9 @@ export const dashboard = {
         md: 3,
         items: [{
           type: 'paper',
-          elevation:1,
+          elevation: 1,
           sx: {
-            p:2,
+            p: 2,
             display: { xs: 'block', md: 'flex' },
             justifyContent: 'space-between'
           },
