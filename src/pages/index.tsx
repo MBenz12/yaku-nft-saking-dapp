@@ -41,15 +41,15 @@ export default function HomePage(props: {
     }
   }
 
-  const updatePage = () => {
-    getUnstakedNFTs({
+  const updatePage = async () => {
+    await getUnstakedNFTs({
       startLoading, closeLoading, wallet, setNftList, setHide, hide
     });
-    getGlobalData({
+    await getGlobalData({
       fields,
       setDataModel
     });
-    getUserPoolData({
+    await getUserPoolData({
       startLoading, closeLoading, wallet, setUserStakedCount, setRewardAmount, setStakedNfts
     });
   }
@@ -91,7 +91,7 @@ export default function HomePage(props: {
             ))
           }
         </Grid>}
-        {stakedNfts && stakedNfts.length > 0 && <Grid container spacing={2}>
+        {stakedNfts && stakedNfts.length > 0 && <Grid container spacing={2} sx={{ my: 2}}>
           {map(stakedNfts, (item: StakedNFT, key: number) => (
             <Grid key={`staked_nft_grid_${key}`} item xs={12} md={6} lg={3}>
               <StakedNFTCard

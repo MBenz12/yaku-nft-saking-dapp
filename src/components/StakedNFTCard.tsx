@@ -1,8 +1,7 @@
 import { useTheme } from '@mui/material';
 import { useWallet } from '@solana/wallet-adapter-react';
-import { LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
-import moment from 'moment';
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { PublicKey } from '@solana/web3.js';
+import { useEffect, useState } from 'react';
 import { TFunction } from 'react-i18next';
 import { claimReward, withdrawNft } from '../contexts/transaction';
 import { getNFTdetail } from '../services/fetchData';

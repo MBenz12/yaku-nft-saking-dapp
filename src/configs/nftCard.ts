@@ -1,7 +1,7 @@
 import { LAMPORTS_PER_SOL } from "@solana/web3.js";
 import moment from "moment";
 
-export const nftCard = (json: any, { setDialog, handleUnstake, handleClaim }) => ({
+export const nftCard = (json: any, { setDialog }) => ({
   type: 'card',
   alt: '',
   showLoading: true,

@@ -9,7 +9,7 @@ import { solConnection } from './utils';
 import { WalletContextState } from '@solana/wallet-adapter-react';
 import { IDL } from './staking';
 import { GlobalPool, UserPool } from './type';
-import { successAlert } from '../components/toastGroup';
+import { successAlert } from '../services/toastGroup';
 
 export const setAmount = async (
     wallet: WalletContextState,
@@ -232,11 +232,11 @@ export const stakeNft = async (
 
         const txId = await wallet.sendTransaction(tx, solConnection)
         await solConnection.confirmTransaction(txId, "finalized");
-        closeLoading();
-        updatePage();
     } catch (error) {
         console.log(error)
-        closeLoading()
+    } finally {
+        closeLoading();
+        updatePage();
     }
 }
 
@@ -299,11 +299,11 @@ export const withdrawNft = async (
         const txId = await wallet.sendTransaction(tx, solConnection);
         await solConnection.confirmTransaction(txId, "finalized");
         successAlert("Unstake has been successfully processed!")
+    } catch (error) {
+        console.log(error)
+    } finally {
         closeLoading();
         updatePage();
-    } catch (error) {
-        closeLoading();
-        console.log(error)
     }
 }
 
@@ -381,11 +381,11 @@ export const claimRewardAll = async (
         await solConnection.confirmTransaction(tx, "singleGossip");
 
         successAlert("Claim has been successfully processed!")
+    } catch (error) {
+        console.log(error)
+    } finally {
         closeLoading();
         updatePage();
-    } catch (error) {
-        closeLoading();
-        console.log(error)
     }
 }
 
@@ -442,11 +442,11 @@ export const claimReward = async (
         const txId = await wallet.sendTransaction(tx, solConnection);
         await solConnection.confirmTransaction(txId, "finalized");
         successAlert("Claim has been successfully processed!")
-        closeLoading();
-        updatePage();
     } catch (error) {
         console.log(error);
+    } finally {
         closeLoading();
+        updatePage();
     }
 }
 export const getGlobalState = async (
