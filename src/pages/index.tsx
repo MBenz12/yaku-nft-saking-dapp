@@ -1,101 +1,50 @@
-import { getParsedNftAccountsByOwner } from "@nfteyez/sol-rayz";
 import { MetadataKey } from "@nfteyez/sol-rayz/dist/config/metaplex";
 import { useWallet } from "@solana/wallet-adapter-react";
-import { LAMPORTS_PER_SOL } from "@solana/web3.js";
 import { useEffect, useState } from "react";
 import NFTCard from "../components/NFTCard";
 import StakedNFTCard from "../components/StakedNFTCard";
-import { NFT_CREATOR } from "../config";
-import { calculateAllRewards, claimRewardAll, getGlobalState, getUserPoolState } from "../contexts/transaction";
-import { solConnection } from "../contexts/utils";
+import { claimRewardAll } from "../contexts/transaction";
+import { getGlobalData, getUnstakedNFTs, getUserPoolData } from "../services/fetchData";
+import { get, map } from "lodash";
+import { TFunction } from "react-i18next";
 
-export default function HomePage(props: { startLoading: Function, closeLoading: Function }) {
-  const { startLoading, closeLoading } = props;
+export default function HomePage(props: { startLoading: Function, closeLoading: Function, t: TFunction }) {
+  const { startLoading, closeLoading, t } = props;
   const wallet = useWallet()
   const [hide, setHide] = useState(false);
   const [nftList, setNftList] = useState<any>();
 
   // global Data values
-  const [adventureRate, setAdventureRate] = useState(0);
-  const [commanderRate, setCommanderRate] = useState(0);
-  const [doctorRate, setDoctorRate] = useState(0);
-  const [normalRate, setNormalRate] = useState(0);
-  const [totalAmount, setTotalAmount] = useState(0);
-  const [scientistRate, setScientistRate] = useState(0);
-  const [specialistRate, setSpecialistRate] = useState(0);
+  const [dataModel, setDataModel] = useState<any>({});
 
   const [stakedNfts, setStakedNfts] = useState<any>();
   const [userStakedCount, setUserStakedCount] = useState(0);
 
   const [rewardAmount, setRewardAmount] = useState(0);
 
-  const getUnstakedNFTs = async () => {
-    startLoading(true);
-    if (wallet.publicKey !== null) {
-      const nftsList = await getParsedNftAccountsByOwner({ publicAddress: wallet.publicKey.toBase58(), connection: solConnection });
-      let list: any = [];
-      for (let item of nftsList) {
-        if (item.data.creators[0].address === NFT_CREATOR) {
-          try {
-            await fetch(item.data.uri)
-              .then(resp =>
-                resp.json()
-              ).then((json) => {
-                list.push({
-                  mintAddress: item.mint,
-                  role: json.attributes.find((o: any) => o.trait_type === "Role").value
-                })
-              }).catch((error) =>
-                console.log(error)
-              )
-          } catch (error) {
-
-          }
-        }
-      }
-      setNftList(list);
-      setHide(!hide);
-    }
-    closeLoading(false);
-  }
-
-  const getGlobalData = async () => {
-    const globalPoolData = await getGlobalState();
-    if (globalPoolData === null) return;
-    setAdventureRate(globalPoolData.adventureRate.toNumber() / LAMPORTS_PER_SOL);
-    setCommanderRate(globalPoolData.commanderRate.toNumber() / LAMPORTS_PER_SOL);
-    setDoctorRate(globalPoolData.doctorRate.toNumber() / LAMPORTS_PER_SOL);
-    setNormalRate(globalPoolData.normalRate.toNumber() / LAMPORTS_PER_SOL);
-    setScientistRate(globalPoolData.scientistRate.toNumber() / LAMPORTS_PER_SOL);
-    setSpecialistRate(globalPoolData.specialistRate.toNumber() / LAMPORTS_PER_SOL);
-    setTotalAmount(globalPoolData.totalAmount.toNumber());
-  }
-
-  const getUserPoolData = async () => {
-    if (wallet.publicKey === null) return;
-    startLoading();
-    const userPoolData = await getUserPoolState(wallet);
-    if (userPoolData === null) return;
-    const count = userPoolData.itemCount.toNumber();
-    setUserStakedCount(count);
-    const claimReward = await calculateAllRewards(wallet);
-    setRewardAmount(claimReward)
-    const staked = [];
-    if (count !== 0) {
-      for (let i = 0; i < count; i++) {
-        staked.push({
-          lockTime: userPoolData.items[i].lockTime.toNumber(),
-          model: userPoolData.items[i].model.toNumber(),
-          nftAddress: userPoolData.items[i].nftAddr.toBase58(),
-          rate: userPoolData.items[i].rate.toNumber(),
-          rewardTime: userPoolData.items[i].rewardTime.toNumber(),
-          stakedTime: userPoolData.items[i].stakeTime.toNumber()
-        })
-      }
-      setStakedNfts(staked)
-    }
-    closeLoading();
-  }
+  const fields = [{
+    label: 'RATES.ADVENTURE',
+    key: 'adventureRate',
+  }, {
+    label: 'RATES.COMMANDER',
+    key: 'commanderRate',
+  }, {
+    label: 'RATES.DOCTOR',
+    key: 'doctorRate',
+  }, {
+    label: 'RATES.NORMAL',
+    key: 'normalRate',
+  }, {
+    label: 'RATES.SCIENTIST',
+    key: 'scientistRate',
+  }, {
+    label: 'RATES.SPECIALIST',
+    key: 'specialistRate',
+  }, {
+    label: 'RATES.TOTAL_AMOUNT',
+    key: 'totalAmount',
+    base: 1,
+  }]
 
   const handleClaimAll = async () => {
     try {
@@ -111,56 +60,44 @@ export default function HomePage(props: { startLoading: Function, closeLoading: 
   }
 
   const updatePage = () => {
-    getUnstakedNFTs();
-    getGlobalData();
-    getUserPoolData();
+    getUnstakedNFTs({
+      startLoading, closeLoading, wallet, setNftList, setHide, hide
+    });
+    getGlobalData({
+      fields,
+      setDataModel
+    });
+    getUserPoolData({
+      startLoading, closeLoading, wallet, setUserStakedCount, setRewardAmount, setStakedNfts
+    });
   }
 
   useEffect(() => {
     updatePage()
-    // eslint-disable-next-line
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [wallet.connected]);
   return (
     <main>
       <div className="container">
         <div className="p-100">
           <div className="global-info">
+            {
+              fields && map(fields, ({
+                label, key
+              }) => 
+              <div key={key} className="info-item">
+                <label>{t(label)}</label>
+                <p>{get(dataModel, key, 0)}</p>
+              </div>)
+            }
             <div className="info-item">
-              <label>Adventure Rate</label>
-              <p>{adventureRate}</p>
-            </div>
-            <div className="info-item">
-              <label>Scientist Rate</label>
-              <p>{scientistRate}</p>
-            </div>
-            <div className="info-item">
-              <label>Doctor Rate</label>
-              <p>{doctorRate}</p>
-            </div>
-            <div className="info-item">
-              <label>Specialist Rate</label>
-              <p>{specialistRate}</p>
-            </div>
-            <div className="info-item">
-              <label>Commander Rate</label>
-              <p>{commanderRate}</p>
-            </div>
-            <div className="info-item">
-              <label>Normal Rate</label>
-              <p>{normalRate}</p>
-            </div>
-            <div className="info-item">
-              <label>Total Amount</label>
-              <p>{totalAmount}</p>
-            </div>
-            <div className="info-item">
-              <label>Your staked nfts</label>
+              <label>{t('DASHBOARD.STAKED_NFT_COUNT')}</label>
               <p>{userStakedCount}</p>
             </div>
           </div>
           <div style={{ textAlign: "center" }}>
             <button className="btn-claim" onClick={() => handleClaimAll()}>
-              Claim All ({(rewardAmount).toLocaleString()} COSMIC)
+              Claim All ({(rewardAmount).toLocaleString()} {t('TOKEN.NAME')})
             </button>
           </div>
           <div className="create-list">

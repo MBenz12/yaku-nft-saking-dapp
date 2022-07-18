@@ -1,0 +1,20 @@
+{
+  "lang": "en",
+  "translation": {
+    "TOKEN": {
+      "NAME": "COSMIC"
+    },
+    "RATES": {
+      "ADVENTURE": "Adventure Rate",
+      "SCIENTIST": "Scientist Rate",
+      "DOCTOR": "Doctor Rate",
+      "SPECIALIST": "Specialist Rate",
+      "COMMANDER": "Commander Rate",
+      "NORMAL": "Normal Rate",
+      "TOTAL_AMOUNT": "Total Amount"
+    },
+    "DASHBOARD": {
+      "STAKED_NFT_COUNT": "Your staked nfts"
+    }
+  }
+}
