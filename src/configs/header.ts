@@ -5,13 +5,22 @@ const handleCloseNavMenu = (event: React.MouseEvent<HTMLElement>, { setAnchorElN
   setAnchorElNav(null);
 };
 
+const handleTwitterClick = (event: React.MouseEvent<HTMLElement>, { config }) => {
+  if (config && config.twitter) {
+    window.open(config.twitter, '_blank');
+  }
+}
+const handleDiscordClick = (event: React.MouseEvent<HTMLElement>, { config }) => {
+  if (config && config.discord) {
+    window.open(config.discord, '_blank');
+  }
+}
 export const header = {
   position: 'static',
   maxWidth: 'xl',
   disableGutters: true,
   color: 'transparent',
   items: [
-    
     {
       type: 'box',
       sx: {
@@ -26,7 +35,7 @@ export const header = {
           type: 'iconButton',
           size: 'large',
           color: 'inherit',
-          iconColor: 'grey',
+          iconColor: '#808080',
           icon: 'MenuIcon',
           onClick: handleOpenNavMenu,
         },
@@ -80,7 +89,7 @@ export const header = {
             sx: {
               fontWeight: 700,
               letterSpacing: '.3rem',
-              color: 'inherit',
+              color: 'text.primary',
               textDecoration: 'none',
             },
             label: 'TITLE',
@@ -96,31 +105,32 @@ export const header = {
           },
           items: [{
             type: 'toggleColorButton',
+            iconColor: '#808080',
             sx: {
               mr: 2,
             },
           }, {
-            type: 'link',
+            type: 'iconButton',
             icon: 'TwitterIcon',
-            iconColor: 'grey',
+            iconColor: '#808080',
             sx: {
-              textDecoration: 'none',
               mr: 2,
-              verticalAlign: 'middle'
             },
-            href: 'https://twitter.com/****'
+            onClick: handleTwitterClick
           }, {
-            type: 'link',
+            type: 'iconButton',
             icon: 'DiscordIcon',
-            iconColor: 'grey',
+            iconColor: '#808080',
             sx: {
-              textDecoration: 'none',
               mr: 2,
-              verticalAlign: 'middle'
             },
-            href: 'https://discord.com/****'
+            onClick: handleDiscordClick
           }, {
             type: 'wallet',
+            variant: 'outlined',
+            sx: {
+              borderRadius: 5000
+            }
           }]
         }
       ]

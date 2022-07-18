@@ -12,14 +12,18 @@ export default function Header(props: {
   t: TFunction,
   theme: any,
   colorMode: any,
+  config: any,
 }) {
-  const { position, color, maxWidth, disableGutters, items, t, theme, colorMode } = props;
+  const { position, color, maxWidth, disableGutters, items, t, theme, colorMode, config } = props;
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
   return (
     <AppBar position={position} color={color}>
-      <Container maxWidth={maxWidth}>
+      <Container maxWidth={maxWidth} sx={{
+        bgcolor: 'background.default',
+        color: 'text.primary',
+      }}>
         <Toolbar disableGutters={disableGutters}>
-          <TemplateItem items={items} pipe={{ anchorElNav, setAnchorElNav, t, theme, colorMode }}></TemplateItem>
+          <TemplateItem items={items} pipe={{ anchorElNav, setAnchorElNav, t, theme, colorMode, config }}></TemplateItem>
         </Toolbar>
       </Container>
     </AppBar>

@@ -1,9 +1,11 @@
+
 import {
   Dialog,
   FormControl,
   FormControlLabel,
   Radio,
   RadioGroup,
+  useTheme,
 } from '@mui/material';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { PublicKey } from '@solana/web3.js';
@@ -22,6 +24,7 @@ export default function NFTCard(props: {
   updatePage: Function;
   t: TFunction
 }) {
+  const theme = useTheme();
   const [image, setImage] = useState<string>('');
   const [name, setName] = useState<string>('');
   const [items, setItems] = useState<any>([{
@@ -42,10 +45,20 @@ export default function NFTCard(props: {
         image: json.image,
         src: json.image,
         title: json.name,
+        sx: {
+          borderRadius: 4,
+        },
         buttons: [{
           type: 'button',
           label: 'ACTIONS.STAKE',
           color: 'primary',
+          variant: 'outlined',
+          sx: {
+            marginLeft: 'auto',
+            borderRadius: 5000,
+            fontWeight: 700,
+            textTransform: 'none'
+          },
           onClick: () => setDialog(true)
         }]
       }])
@@ -61,7 +74,7 @@ export default function NFTCard(props: {
 
   return (
     <>
-      {items && items.length && <TemplateItem key='nftCard' items={items} pipe={{ t: props.t }}></TemplateItem>}
+      {items && items.length && <TemplateItem key='nftCard' items={items} pipe={{ t: props.t, theme }}></TemplateItem>}
       <StakeDialog
         opened={dialog}
         onClose={() => setDialog(false)}
@@ -139,10 +152,7 @@ function StakeDialog(props: {
     }
   };
   return (
-    <Dialog
-      open={opened}
-      // onClose={() => onClose()}
-    >
+    <Dialog open={opened} >
       <div className='dialog-content'>
         <button
           style={{ position: 'absolute', right: 10, top: 10, width: 20 }}

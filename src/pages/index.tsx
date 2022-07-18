@@ -5,14 +5,16 @@ import NFTCard from '../components/NFTCard';
 import StakedNFTCard from '../components/StakedNFTCard';
 import { claimRewardAll } from '../contexts/transaction';
 import { getGlobalData, getUnstakedNFTs, getUserPoolData } from '../services/fetchData';
-import { get, map } from 'lodash';
 import { TFunction } from 'react-i18next';
-import { Grid, Paper, Typography } from '@mui/material';
+import { Breakpoint, Container, Grid, Paper, Typography } from '@mui/material';
 import { ColorButton } from '../components/ColorButton';
-import * as colors from '@mui/material/colors';
+import { TemplateItem } from '../components/TemplateItem';
+import { fields } from '../configs/dashboard'
 
-export default function HomePage(props: { startLoading: Function, closeLoading: Function, t: TFunction }) {
-  const { startLoading, closeLoading, t } = props;
+export default function HomePage(props: {
+  startLoading: Function, closeLoading: Function, t: TFunction, theme: any, maxWidth: Breakpoint, className: string, sx: any, items: Array<any>
+}) {
+  const { startLoading, closeLoading, t, theme, maxWidth, className, sx, items } = props;
   const wallet = useWallet()
   const [hide, setHide] = useState(false);
   const [nftList, setNftList] = useState<any>();
@@ -24,30 +26,6 @@ export default function HomePage(props: { startLoading: Function, closeLoading: 
   const [userStakedCount, setUserStakedCount] = useState(0);
 
   const [rewardAmount, setRewardAmount] = useState(0);
-
-  const fields = [{
-    label: 'RATES.ADVENTURE',
-    key: 'adventureRate',
-  }, {
-    label: 'RATES.COMMANDER',
-    key: 'commanderRate',
-  }, {
-    label: 'RATES.DOCTOR',
-    key: 'doctorRate',
-  }, {
-    label: 'RATES.NORMAL',
-    key: 'normalRate',
-  }, {
-    label: 'RATES.SCIENTIST',
-    key: 'scientistRate',
-  }, {
-    label: 'RATES.SPECIALIST',
-    key: 'specialistRate',
-  }, {
-    label: 'RATES.TOTAL_AMOUNT',
-    key: 'totalAmount',
-    base: 1,
-  }]
 
   const handleClaimAll = async () => {
     try {
@@ -80,80 +58,57 @@ export default function HomePage(props: { startLoading: Function, closeLoading: 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [wallet.connected]);
   return (
-    <main>
-      <div className='container'>
-        <div className='p-100'>
-          <div className='global-info'>
-            <Grid container spacing={2}>
-              {
-                fields && map(fields, ({
-                  label, key,
-                }) => <Grid item xs={3}>
-                  <Paper key={key} elevation={1} sx={{
-                    p:2
-                  }}>
-                    <Typography component='h5'>{t(label)}</Typography>
-                    <Typography component='p'>{get(dataModel, key, 0)}</Typography>
-                  </Paper>
-                </Grid>)
-              }
-              <Grid item xs={3}>
-                <Paper elevation={1} sx={{
-                  p:2,
-                }} >
-                  <Typography component='h5'>{t('DASHBOARD.STAKED_NFT_COUNT')}</Typography>
-                  <Typography component='p'>{userStakedCount}</Typography>
-                </Paper>
-              </Grid>
+    <Container maxWidth={maxWidth} className={className} sx={sx}>
+      <TemplateItem items={items} pipe={{ startLoading, closeLoading, t, theme, dataModel, userStakedCount, rewardAmount }}></TemplateItem>
+      <Paper elevation={0}>
+        <Grid container sx={{ justifyContent: 'center', p: 2 }}>
+          <Grid item>
+            <ColorButton colorname='yellow' variant='contained' onClick={() => handleClaimAll()} sx={{
+              borderRadius: 5000,
+              textTransform: 'none'
+            }}>
+              {t('ACTIONS.CLAIM_ALL')} ({(rewardAmount).toLocaleString()} {t('TOKEN.NAME')})
+            </ColorButton>
+          </Grid>
+        </Grid>
+      </Paper>
+      <Grid container spacing={2}>
+        {nftList && nftList.length &&
+          nftList.map((item: any, key: number) => (
+            <Grid key={`nft_grid_${key}`} item xs={3}>
+              <NFTCard
+                mint={item.mintAddress}
+                role={item.role}
+                key={key}
+                startLoading={() => startLoading()}
+                closeLoading={() => closeLoading()}
+                updatePage={() => updatePage()}
+                t={t}
+              />
             </Grid>
-          </div>
-          <Grid container sx={{ justifyContent: 'center', p: 2 }}>
-              <Grid item>
-                <ColorButton colorname='indigo' variant='contained' onClick={() => handleClaimAll()}>
-                  {t('ACTIONS.CLAIM_ALL')} ({(rewardAmount).toLocaleString()} {t('TOKEN.NAME')})
-                </ColorButton>
-              </Grid>
+          ))
+        }
+      </Grid>
+      <Grid container spacing={2}>
+        {stakedNfts && stakedNfts.length !== 0 && stakedNfts.map((item: StakedNFT, key: number) => (
+          <Grid key={`staked_nft_grid_${key}`} item xs={3}>
+            <StakedNFTCard
+              key={key}
+              lockTime={item.lockTime}
+              model={item.model}
+              mint={item.nftAddress}
+              rate={item.rate}
+              rewardTime={item.rewardTime}
+              stakedTime={item.stakedTime}
+              startLoading={() => startLoading()}
+              closeLoading={() => closeLoading()}
+              updatePage={() => updatePage()}
+              t={t}
+            />
           </Grid>
-          <Grid container spacing={2}>
-            {nftList && nftList.length &&
-              nftList.map((item: any, key: number) => (
-                <Grid key={`nft_grid_${key}`} item xs={3}>
-                  <NFTCard
-                    mint={item.mintAddress}
-                    role={item.role}
-                    key={key}
-                    startLoading={() => startLoading()}
-                    closeLoading={() => closeLoading()}
-                    updatePage={() => updatePage()}
-                    t={t}
-                  />
-                </Grid>
-              ))
-            }
-          </Grid>
-
-          <Grid container spacing={2}>
-            {stakedNfts && stakedNfts.length !== 0 && stakedNfts.map((item: StakedNFT, key: number) => (
-              <Grid key={`staked_nft_grid_${key}`} item xs={3}>
-                <StakedNFTCard
-                  key={key}
-                  lockTime={item.lockTime}
-                  model={item.model}
-                  mint={item.nftAddress}
-                  rate={item.rate}
-                  rewardTime={item.rewardTime}
-                  stakedTime={item.stakedTime}
-                  startLoading={() => startLoading()}
-                  closeLoading={() => closeLoading()}
-                  updatePage={() => updatePage()}
-                  t={t}
-                />
-              </Grid>
-            ))}
-          </Grid>
-        </div>
-      </div>
-    </main>
+        ))}
+      </Grid>
+    </Container>
   )
 }
 

@@ -15,3 +15,6 @@ export const PROGRAM_ID = "8g3PG15GWGFsBLtfaVXZ8ntpUTNvwDMsrW2dRFr7pR4V";
 
 export const NFT_CREATOR = "AV1xJmDHEBSigGA99A8SXqdcSMDR3gNywjCeFwTrtMni"
 export const METAPLEX = new web3.PublicKey('metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s');
+
+export const TWITTER = "https://twitter.com/****"
+export const DISCORD = "https://discord.com/****"

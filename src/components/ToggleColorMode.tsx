@@ -1,9 +1,9 @@
-import { useMemo, useState, createContext } from "react";
+import { useMemo, useState, createContext, Children, cloneElement } from "react";
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 
 const ColorModeContext = createContext({ toggleColorMode: () => {} });
 export default function ToggleColorMode(props: any) {
-  const [mode, setMode] = useState<ColorMode>(ColorMode.LIGHT);
+  const [mode, setMode] = useState<ColorMode>(ColorMode.DARK);
   const colorMode = useMemo(
     () => ({
       toggleColorMode: () => {
@@ -26,7 +26,7 @@ export default function ToggleColorMode(props: any) {
   return (
     <ColorModeContext.Provider value={colorMode}>
       <ThemeProvider theme={theme}>
-        {props.children}
+        {Children.map(props.children, (child) =>cloneElement(child, { theme, colorMode }))}
       </ThemeProvider>
     </ColorModeContext.Provider>
   );
