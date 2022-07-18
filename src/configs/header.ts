@@ -11,22 +11,7 @@ export const header = {
   disableGutters: true,
   color: 'transparent',
   items: [
-    {
-      type: 'typography',
-      variant: 'h6',
-      noWrap: true,
-      component: 'a',
-      href: '/',
-      sx: {
-        mr: 2,
-        display: { xs: 'none', md: 'flex' },
-        fontWeight: 700,
-        letterSpacing: '.3rem',
-        color: 'inherit',
-        textDecoration: 'none',
-      },
-      label: 'TITLE',
-    },
+    
     {
       type: 'box',
       sx: {
@@ -64,7 +49,10 @@ export const header = {
           items: [{
             type: 'typography',
             label: 'STAKING.TITLE',
-            textAlign: 'center'
+            textAlign: 'center',
+            sx: {
+              px: 2
+            }
           }]
         }
       ],
@@ -72,10 +60,31 @@ export const header = {
     {
       type: 'grid',
       spacing: 2,
+      sx: {
+        justifyContent: 'flex-end'
+      },
       items: [
         {
           type: 'gridItem',
           xs: 6,
+          sx: {
+            display: { xs: 'none', md: 'flex' },
+            alignItems: 'center',
+          },
+          items: [{
+            type: 'typography',
+            variant: 'h6',
+            noWrap: true,
+            component: 'a',
+            href: '/',
+            sx: {
+              fontWeight: 700,
+              letterSpacing: '.3rem',
+              color: 'inherit',
+              textDecoration: 'none',
+            },
+            label: 'TITLE',
+          }]
         },
         {
           type: 'gridItem',

@@ -97,7 +97,7 @@ export default function HomePage(props: { startLoading: Function, closeLoading: 
           </div>
           <div style={{ textAlign: "center" }}>
             <button className="btn-claim" onClick={() => handleClaimAll()}>
-              Claim All ({(rewardAmount).toLocaleString()} {t('TOKEN.NAME')})
+              {t('ACTIONS.CLAIM_ALL')} ({(rewardAmount).toLocaleString()} {t('TOKEN.NAME')})
             </button>
           </div>
           <div className="create-list">
@@ -110,6 +110,7 @@ export default function HomePage(props: { startLoading: Function, closeLoading: 
                   startLoading={() => startLoading()}
                   closeLoading={() => closeLoading()}
                   updatePage={() => updatePage()}
+                  t={t}
                 />
               ))
             }
@@ -125,6 +126,7 @@ export default function HomePage(props: { startLoading: Function, closeLoading: 
                 startLoading={() => startLoading()}
                 closeLoading={() => closeLoading()}
                 updatePage={() => updatePage()}
+                t={t}
               />
             ))}
           </div>

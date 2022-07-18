@@ -2,6 +2,7 @@ import { useWallet } from "@solana/wallet-adapter-react";
 import { LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
 import moment from "moment";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { TFunction } from "react-i18next";
 import { claimReward, withdrawNft } from "../contexts/transaction";
 import { getNftMetaData } from "../contexts/utils";
 
@@ -15,6 +16,7 @@ export default function StakedNFTCard(props: {
   startLoading: Function,
   closeLoading: Function,
   updatePage: Function,
+  t: TFunction,
 }) {
   const [image, setImage] = useState("");
   const [name, setName] = useState("");

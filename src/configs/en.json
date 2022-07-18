@@ -8,6 +8,12 @@
     "TOKEN": {
       "NAME": "COSMIC"
     },
+    "ACTIONS": {
+      "STAKE": "Stake",
+      "UNSTAKE": "Unstake",
+      "CLAIM": "Claim",
+      "CLAIM_ALL": "Claim All"
+    },
     "RATES": {
       "ADVENTURE": "Adventure Rate",
       "SCIENTIST": "Scientist Rate",
