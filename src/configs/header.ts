@@ -1,139 +1,160 @@
-const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>, { setAnchorElNav }: any) => {
+const handleOpenNavMenu = (
+  event: React.MouseEvent<HTMLElement>,
+  { setAnchorElNav }: any
+) => {
   setAnchorElNav(event.currentTarget);
 };
-const handleCloseNavMenu = (event: React.MouseEvent<HTMLElement>, { setAnchorElNav }: any) => {
+const handleCloseNavMenu = (
+  event: React.MouseEvent<HTMLElement>,
+  { setAnchorElNav }: any
+) => {
   setAnchorElNav(null);
 };
 
-const handleTwitterClick = (event: React.MouseEvent<HTMLElement>, { config }) => {
+const handleTwitterClick = (
+  event: React.MouseEvent<HTMLElement>,
+  { config }: any
+) => {
   if (config && config.twitter) {
-    window.open(config.twitter, '_blank');
+    window.open(config.twitter, "_blank");
   }
-}
-const handleDiscordClick = (event: React.MouseEvent<HTMLElement>, { config }) => {
+};
+const handleDiscordClick = (
+  event: React.MouseEvent<HTMLElement>,
+  { config }: any
+) => {
   if (config && config.discord) {
-    window.open(config.discord, '_blank');
+    window.open(config.discord, "_blank");
   }
-}
+};
 export const header = {
-  position: 'static',
-  maxWidth: 'xl',
+  position: "static",
+  maxWidth: "xl",
   disableGutters: true,
-  color: 'transparent',
+  color: "transparent",
   items: [
     {
-      type: 'box',
+      type: "box",
       sx: {
         flexGrow: 1,
         display: {
-          xs: 'flex',
-          md: 'none',
+          xs: "flex",
+          md: "none",
         },
       },
       items: [
         {
-          type: 'iconButton',
-          size: 'large',
-          color: 'inherit',
-          iconColor: '#808080',
-          icon: 'MenuIcon',
+          type: "iconButton",
+          size: "large",
+          color: "inherit",
+          iconColor: "#808080",
+          icon: "MenuIcon",
           onClick: handleOpenNavMenu,
         },
         {
-          type: 'menu',
-          id: 'menu-appbar',
+          type: "menu",
+          id: "menu-appbar",
           anchorOrigin: {
-            vertical: 'bottom',
-            horizontal: 'left',
+            vertical: "bottom",
+            horizontal: "left",
           },
           keepMounted: true,
           transformOrigin: {
-            vertical: 'top',
-            horizontal: 'left',
+            vertical: "top",
+            horizontal: "left",
           },
           onClose: handleCloseNavMenu,
           sx: {
-            display: { xs: 'block', md: 'none' },
+            display: { xs: "block", md: "none" },
           },
-          items: [{
-            type: 'typography',
-            label: 'STAKING.TITLE',
-            textAlign: 'center',
-            sx: {
-              px: 2
-            }
-          }]
-        }
+          items: [
+            {
+              type: "typography",
+              label: "STAKING.TITLE",
+              textAlign: "center",
+              sx: {
+                px: 2,
+              },
+            },
+          ],
+        },
       ],
     },
     {
-      type: 'grid',
+      type: "grid",
       spacing: 2,
       sx: {
-        justifyContent: 'flex-end'
+        justifyContent: "flex-end",
       },
       items: [
         {
-          type: 'gridItem',
+          type: "gridItem",
           xs: 6,
           sx: {
-            display: { xs: 'none', md: 'flex' },
-            alignItems: 'center',
+            display: { xs: "none", md: "flex" },
+            alignItems: "center",
           },
-          items: [{
-            type: 'typography',
-            variant: 'h6',
-            noWrap: true,
-            component: 'a',
-            href: '/',
-            sx: {
-              fontWeight: 700,
-              letterSpacing: '.3rem',
-              color: 'text.primary',
-              textDecoration: 'none',
+          items: [
+            {
+              type: "typography",
+              variant: "h6",
+              noWrap: true,
+              component: "a",
+              href: "/",
+              sx: {
+                fontWeight: 700,
+                letterSpacing: ".3rem",
+                color: "text.primary",
+                textDecoration: "none",
+              },
+              label: "TITLE",
             },
-            label: 'TITLE',
-          }]
+          ],
         },
         {
-          type: 'gridItem',
+          type: "gridItem",
           xs: 6,
           sx: {
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'flex-end'
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "flex-end",
           },
-          items: [{
-            type: 'toggleColorButton',
-            iconColor: '#808080',
-            sx: {
-              mr: 2,
+          items: [
+            {
+              type: "toggleColorButton",
+              iconColor: "#808080",
+              sx: {
+                mr: 2,
+              },
             },
-          }, {
-            type: 'iconButton',
-            icon: 'TwitterIcon',
-            iconColor: '#808080',
-            sx: {
-              mr: 2,
+            {
+              type: "iconButton",
+              icon: "TwitterIcon",
+              iconColor: "#808080",
+              sx: {
+                mr: 2,
+              },
+              onClick: handleTwitterClick,
             },
-            onClick: handleTwitterClick
-          }, {
-            type: 'iconButton',
-            icon: 'DiscordIcon',
-            iconColor: '#808080',
-            sx: {
-              mr: 2,
+            {
+              type: "iconButton",
+              icon: "DiscordIcon",
+              iconColor: "#808080",
+              sx: {
+                mr: 2,
+              },
+              onClick: handleDiscordClick,
             },
-            onClick: handleDiscordClick
-          }, {
-            type: 'wallet',
-            variant: 'outlined',
-            sx: {
-              borderRadius: 5000
-            }
-          }]
-        }
-      ]
-    }
+            {
+              type: "wallet",
+              variant: "outlined",
+              sx: {
+                borderRadius: 5000,
+              },
+            },
+          ],
+        },
+      ],
+    },
   ],
 };
