@@ -32,6 +32,7 @@ import { ExpandMoreIcon, Icons, SolanaIcon } from "./svgIcons";
 import { Image } from "mui-image";
 import { ColorButton } from "./ColorButton";
 import { ExpandMore } from "./ExpandMore";
+import { HashLoader } from "react-spinners";
 
 const getKey = (item: any, index: number) => `${get(item, "type")}#${Math.floor(Math.random()*100)}#${index}`;
 const renderComponent = ({ items, pipe }: any, { item, index }: any) => {
@@ -85,7 +86,7 @@ const renderComponent = ({ items, pipe }: any, { item, index }: any) => {
                 height={imageHeight}
                 src={src || image}
                 alt={alt}
-                showLoading={showLoading}
+                showLoading={showLoading && <HashLoader size={32} color="#c300ff" />} 
                 fit={fit}
               ></Image>
             </CardMedia>
@@ -345,8 +346,8 @@ const renderComponent = ({ items, pipe }: any, { item, index }: any) => {
       );
     },
     image: () => {
-      const { src, image, alt = '', ...imageProps } = otherProps;
-      return <Image key={key} src={src || (isFunction(image) ? image(pipe) : image)} alt={alt} {...imageProps} />
+      const { src, image, alt = '', showLoading, ...imageProps } = otherProps;
+      return <Image key={key} src={src || (isFunction(image) ? image(pipe) : image)} alt={alt} showLoading={showLoading && <HashLoader size={32} color="#c300ff" />} {...imageProps} />
     },
     wallet: () => (
       <WalletDialogProvider key={key}>

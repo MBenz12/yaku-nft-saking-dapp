@@ -80,7 +80,7 @@ export const dashboard = {
                     {
                       type: "typography",
                       component: "p",
-                      label: (pipe: any) => pipe.userStakedCount,
+                      label: ({ userStakedCount }: any) => userStakedCount,
                     },
                   ],
                 },
