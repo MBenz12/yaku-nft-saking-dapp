@@ -87,6 +87,6 @@ export const stakeDialog = {
       mt: 2,
       borderRadius: 5000
     },
-    onClick:(event: any, { onStake }: any) => onStake(),
+    onClick:(event: any, { onStake, model, lockDay }: any) => onStake(model, lockDay),
   }]
 }

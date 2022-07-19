@@ -25,6 +25,7 @@ export const METAPLEX = new web3.PublicKey(
 export const TWITTER = "https://twitter.com/****";
 export const DISCORD = "https://discord.com/****";
 
+// 3 Models support
 export const ALLOWED_MODELS: Array<any> = [{
   value: '1',
   label: 'MODELS.1.LABEL',
@@ -38,6 +39,13 @@ export const ALLOWED_MODELS: Array<any> = [{
   label: 'MODELS.3.LABEL',
   description: 'MODELS.3.DESC',
 }];
+
+// 1 Model support
+// export const ALLOWED_MODELS: Array<any> = [{
+//   value: '1',
+//   label: 'MODELS.1.LABEL',
+//   description: 'MODELS.1.DESC'
+// }];
 export const MODEL_CAN_SELECT_LOCKDAYS = '3';
 export const ALLOWED_LOCKDAYS: Array<any> = [{
   value: '7',

@@ -23,8 +23,6 @@ export default function NFTCard(props: {
   const wallet = useWallet();
   const { startLoading, closeLoading, updatePage, t, mint, role } = props;
   const theme = useTheme();
-  const [model, setModel] = useState(DEFAULT_MODEL);
-  const [lockDay, setLockDay] = useState(DEFAULT_LOCKDAY);
   const [dataModel, setDataModel] = useState<any>({
     name: '',
     image: '',
@@ -41,14 +39,14 @@ export default function NFTCard(props: {
     if (ALLOWED_MODELS.length > 1) {
       setDialog(showDialog);
     } else {
-      onStake();
+      onStake(DEFAULT_MODEL, DEFAULT_LOCKDAY, { mint, role });
     }
   }
 
   const onClose = () => setDialog(false)
 
-  const onStake = async () => {
-    const { role, mint } = dataModel;
+  const onStake = async (model = DEFAULT_MODEL, lockDay = DEFAULT_LOCKDAY, params = dataModel) => {
+    const { role, mint } = params;
     if (wallet.publicKey === null) return;
     let period = DEFAULT_PERIOD;
     if (Object.keys(MODEL_PERIOD_MAPPING).includes(model)) {
@@ -108,10 +106,8 @@ export default function NFTCard(props: {
         opened={dialog}
         onClose={onClose}
         dataModel={dataModel}
-        model={model}
-        lockDay={lockDay}
         pipe={{
-          startLoading, closeLoading, updatePage, t, setDataModel, onStake, setModel, setLockDay
+          startLoading, closeLoading, updatePage, t, onStake
         }}
       />
     </>

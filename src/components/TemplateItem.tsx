@@ -123,8 +123,8 @@ const renderComponent = ({ items, pipe }: any, { item, index }: any) => {
       );
     },
     dialog: () => {
-      const { buttons, onClick, ...dialogProps } = otherProps;
-      return <Dialog key={key} open={opened} onClick={(event) => onClick && onClick(event, pipe)} {...dialogProps}>
+      const { buttons } = otherProps;
+      return <>
         {
           map(subItems, ({ items: contentItems, ...contentProps }, idx) => 
           <DialogContent key={`${key}#content#${idx}`} {...contentProps}>
@@ -134,7 +134,7 @@ const renderComponent = ({ items, pipe }: any, { item, index }: any) => {
         { buttons && <DialogActions>
           <TemplateItem key={`${key}#action#item`} items={buttons} pipe={pipe}></TemplateItem>
         </DialogActions>}
-      </Dialog>
+      </>
     },
     form: () => {
       const { ...formProps } = otherProps;
