@@ -7,12 +7,19 @@ import {
   CardMedia,
   Chip,
   Collapse,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  FormControl,
+  FormControlLabel,
   Grid,
   IconButton,
   Link,
   Menu,
   MenuItem,
   Paper,
+  Radio,
+  RadioGroup,
   Typography,
 } from "@mui/material";
 import { Container } from "@mui/system";
@@ -28,10 +35,14 @@ import { ExpandMore } from "./ExpandMore";
 
 const getKey = (item: any, index: number) => `${get(item, "type")}#${index}`;
 const renderComponent = ({ items, pipe }: any, { item, index }: any) => {
-  const { t, theme, colorMode, dataModel, expanded, handleExpandClick } = pipe;
+  const { t, theme, colorMode, dataModel, expanded, handleExpandClick, opened } = pipe;
   const isDarkMode = theme?.palette?.mode === "dark";
-  const { type, items: subItems, ...otherProps } = item;
+  const { type, items: subItems, hidden, ...otherProps } = item;
   const key = getKey(item, index);
+  if (isFunction(hidden) ? !!hidden(pipe) : !!hidden) {
+    return <></>
+  }
+  const processFunc = (value: Function | string | number, params = pipe) => isFunction(value) ? value(params) : value;
   const components: any = {
     container: () => (
       <Container key={key} {...otherProps}>
@@ -85,7 +96,7 @@ const renderComponent = ({ items, pipe }: any, { item, index }: any) => {
                 items={[
                   {
                     type: "typography",
-                    label: title,
+                    label: processFunc(title),
                     variant: "h6",
                   },
                 ]}
@@ -109,6 +120,37 @@ const renderComponent = ({ items, pipe }: any, { item, index }: any) => {
           { canExpand && <TemplateItem items={expandItems} pipe={pipe}></TemplateItem>}
         </Card>
       );
+    },
+    dialog: () => {
+      const { buttons, onClick, ...dialogProps } = otherProps;
+      return <Dialog open={opened} onClick={(event) => onClick && onClick(event, pipe)} {...dialogProps}>
+        {
+          map(subItems, ({ items: contentItems, ...contentProps }, idx) => 
+          <DialogContent key={`${key}#${idx}`} {...contentProps}>
+            <TemplateItem items={contentItems} pipe={pipe}></TemplateItem>
+          </DialogContent>
+        )}
+        { buttons && <DialogActions>
+          <TemplateItem items={buttons} pipe={pipe}></TemplateItem>
+        </DialogActions>}
+      </Dialog>
+    },
+    form: () => {
+      const { ...formProps } = otherProps;
+      return <FormControl {...formProps}>
+        <TemplateItem items={subItems} pipe={pipe}></TemplateItem>
+      </FormControl>
+    },
+    radioGroup: () => {
+      const { value, onChange, options, radio, ...radioGrpProps } = otherProps;
+      return <RadioGroup value={processFunc(value)} onChange={(event: any) => onChange && onChange(event, pipe)} {...radioGrpProps}>
+        {
+          map(options, ({ value, label, description }) => <>
+            <FormControlLabel value={value} control={<Radio {...radio}/>} label={t(processFunc(label))} />
+            { description && <Typography component='p' sx={{ marginLeft: 4 }}> {t(processFunc(description))} </Typography> }
+            </>)
+        }
+      </RadioGroup>
     },
     grid: () => {
       const { spacing } = otherProps;
@@ -137,7 +179,7 @@ const renderComponent = ({ items, pipe }: any, { item, index }: any) => {
             map(subItems, ({ label, key }) => (
               <Grid key={key} item {...breakpoints}>
                 <Paper key={key} elevation={elevation} sx={sx}>
-                  <Typography component="h6">{t(label)}</Typography>
+                  <Typography component="h6">{t(processFunc(label))}</Typography>
                   <Typography component="p">
                     {get(dataModel, key, 0)}
                   </Typography>
@@ -168,7 +210,7 @@ const renderComponent = ({ items, pipe }: any, { item, index }: any) => {
       const { label: typoLabel, ...typoProps } = otherProps;
       return (
         <Typography key={key} {...typoProps}>
-          {t(isFunction(typoLabel) ? typoLabel(pipe) : typoLabel)}
+          {t(processFunc(typoLabel))}
         </Typography>
       );
     },
@@ -177,7 +219,7 @@ const renderComponent = ({ items, pipe }: any, { item, index }: any) => {
       return (
         <Chip
           key={key}
-          label={t(isFunction(chipLabel) ? chipLabel(pipe) : chipLabel)}
+          label={t(processFunc(chipLabel))}
           {...chipProps}
         ></Chip>
       );
@@ -188,7 +230,7 @@ const renderComponent = ({ items, pipe }: any, { item, index }: any) => {
         <>{
           map(data, (dataItem: any, idx: number) => <Chip
             key={`${key}#${idx}`}
-            label={t(isFunction(chipListLabel) ? chipListLabel({ data: dataItem }, pipe) : chipListLabel)}
+            label={t(processFunc(chipListLabel, { ...pipe, data: dataItem }))}
             {...chipListProps}
           ></Chip>)
         }</>
@@ -203,10 +245,10 @@ const renderComponent = ({ items, pipe }: any, { item, index }: any) => {
       return (
         <Button
           key={key}
-          onClick={(event) => onButtonClick(event, pipe)}
+          onClick={(event) => onButtonClick && onButtonClick(event, pipe)}
           {...buttonProps}
         >
-          {t(buttonLabel)}
+          {t(processFunc(buttonLabel))}
         </Button>
       );
     },
@@ -219,10 +261,10 @@ const renderComponent = ({ items, pipe }: any, { item, index }: any) => {
       return (
         <ColorButton
           key={key}
-          onClick={(event: any) => onColorBtnClick(event, pipe)}
+          onClick={(event: any) => onColorBtnClick && onColorBtnClick(event, pipe)}
           {...colorBtnProps}
         >
-          {t(colorBtnLabel)}
+          {t(processFunc(colorBtnLabel))}
         </ColorButton>
       );
     },
@@ -239,7 +281,7 @@ const renderComponent = ({ items, pipe }: any, { item, index }: any) => {
       return (
         <IconButton
           key={key}
-          onClick={(event) => onIconButtonClick(event, pipe)}
+          onClick={(event) => onIconButtonClick && onIconButtonClick(event, pipe)}
           {...iconBtnProps}
         >
           <Icons icon={icon} color={finalIconColor}></Icons>
@@ -275,7 +317,7 @@ const renderComponent = ({ items, pipe }: any, { item, index }: any) => {
       } = otherProps;
       return (
         <Link key={key} {...linkProps}>
-          <Icons icon={linkIcon} color={linkIconColor}></Icons> {linkLabel}
+          <Icons icon={linkIcon} color={linkIconColor}></Icons> {processFunc(linkLabel)}
         </Link>
       );
     },
@@ -286,7 +328,7 @@ const renderComponent = ({ items, pipe }: any, { item, index }: any) => {
           key={key}
           anchorEl={get(pipe, "anchorElNav")}
           open={Boolean(get(pipe, "anchorElNav"))}
-          onClose={(event) => onClose(event, pipe)}
+          onClose={(event) => onClose && onClose(event, pipe)}
           {...menuProps}
         >
           <TemplateItem items={subItems} pipe={pipe}></TemplateItem>
@@ -300,6 +342,10 @@ const renderComponent = ({ items, pipe }: any, { item, index }: any) => {
           <TemplateItem items={subItems} pipe={pipe}></TemplateItem>
         </MenuItem>
       );
+    },
+    image: () => {
+      const { src, image, alt = '', ...imageProps } = otherProps;
+      return <Image src={src || (isFunction(image) ? image(pipe) : image)} alt={alt} {...imageProps} />
     },
     wallet: () => (
       <WalletDialogProvider key={key}>

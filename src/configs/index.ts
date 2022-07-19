@@ -1,7 +1,8 @@
 import en from "./en.json";
 import { header } from "./header";
 import { dashboard, fields } from "./dashboard";
-import { nftCard } from "./nftCard";
+import { nftCard, stakedNftCard } from "./nftCard";
+import { stakeDialog } from "./stakeDialog";
 
 export const resources = {
   en,
@@ -12,4 +13,6 @@ export const templates = {
   dashboard,
   fields,
   nftCard,
+  stakedNftCard,
+  stakeDialog,
 };

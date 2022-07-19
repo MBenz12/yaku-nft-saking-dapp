@@ -51,6 +51,7 @@ export const ALLOWED_LOCKDAYS: Array<any> = [{
 }]
 export const DEFAULT_MODEL = '1';
 export const DEFAULT_LOCKDAY = '7';
+export const DEFAULT_PERIOD = 1;
 export const MODEL_PERIOD_MAPPING: any = {
   '1': 15,
   '2': 0,

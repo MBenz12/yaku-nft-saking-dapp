@@ -27,10 +27,12 @@ export default function NFTCard(props: {
   updatePage: Function;
   t: TFunction;
 }) {
-  const { startLoading, closeLoading, updatePage, t } = props;
+  const { startLoading, closeLoading, updatePage, t, mint, role } = props;
   const theme = useTheme();
-  const [name, setName] = useState<string>("");
-  const [image, setImage] = useState<string>("");
+  const [dataModel, setDataModel] = useState<any>({
+    name: '',
+    image: ''
+  });
   const [expanded, setExpanded] = useState(false);
   const [items, setItems] = useState<any>([{}]);
   const [dialog, setDialog] = useState(false);
@@ -42,8 +44,7 @@ export default function NFTCard(props: {
   const updateCard = async () => {
     try {
       const json: any = await getNFTdetail(props);
-      setImage(json.image);
-      setName(json.name);
+      setDataModel({ ...json, mint, role });
       const template = nftCard;
       setItems([
         template(
@@ -73,12 +74,9 @@ export default function NFTCard(props: {
       <StakeDialog
         opened={dialog}
         onClose={() => setDialog(false)}
-        image={image}
-        name={name}
-        mint={props.mint}
-        role={props.role}
+        dataModel={dataModel}
         pipe={{
-          startLoading, closeLoading, updatePage, t
+          startLoading, closeLoading, updatePage, t, setDataModel
         }}
       />
     </>
