@@ -32,6 +32,7 @@ export const getUnstakedNFTs = async (props: {
         const resp = await fetch(uri);
         const json: any = await resp.json();
         list.push({
+          ...json,
           mintAddress: get(item, "mint"),
           role: get(
             get(json, "attributes", {}).find(

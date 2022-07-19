@@ -27,17 +27,17 @@ import {
   WalletDialogProvider,
   WalletMultiButton,
 } from "@solana/wallet-adapter-material-ui";
-import { get, map, isFunction } from "lodash";
+import { get, map, isFunction, trim } from "lodash";
 import { ExpandMoreIcon, Icons, SolanaIcon } from "./svgIcons";
 import { Image } from "mui-image";
 import { ColorButton } from "./ColorButton";
 import { ExpandMore } from "./ExpandMore";
 
-const getKey = (item: any, index: number) => `${get(item, "type")}#${index}`;
+const getKey = (item: any, index: number) => `${get(item, "type")}#${Math.floor(Math.random()*100)}#${index}`;
 const renderComponent = ({ items, pipe }: any, { item, index }: any) => {
   const { t, theme, colorMode, dataModel, expanded, handleExpandClick, opened } = pipe;
   const isDarkMode = theme?.palette?.mode === "dark";
-  const { type, items: subItems, hidden, ...otherProps } = item;
+  const { type, items: subItems, hidden = false, ...otherProps } = item;
   const key = getKey(item, index);
   if (isFunction(hidden) ? !!hidden(pipe) : !!hidden) {
     return <></>
@@ -192,9 +192,9 @@ const renderComponent = ({ items, pipe }: any, { item, index }: any) => {
       );
     },
     gridItem: () => {
-      const { xs } = otherProps;
+      const { ...gridItemProps } = otherProps;
       return (
-        <Grid key={key} item xs={xs} {...otherProps}>
+        <Grid key={key} item {...gridItemProps}>
           <TemplateItem key={`${key}#item`} items={subItems} pipe={pipe}></TemplateItem>
         </Grid>
       );
@@ -208,10 +208,10 @@ const renderComponent = ({ items, pipe }: any, { item, index }: any) => {
       );
     },
     typography: () => {
-      const { label: typoLabel, ...typoProps } = otherProps;
+      const { label, ...typoProps } = otherProps;
       return (
         <Typography key={key} {...typoProps}>
-          {t(processFunc(typoLabel))}
+          {t(processFunc(label))}
         </Typography>
       );
     },
@@ -356,7 +356,8 @@ const renderComponent = ({ items, pipe }: any, { item, index }: any) => {
       </WalletDialogProvider>
     ),
   };
-  return isFunction(components[item?.type]) ? components[item?.type]() : <></>;
+  const trimmedType = trim(item?.type);
+  return isFunction(components[trimmedType]) ? components[trimmedType]() : <></>;
 };
 export function TemplateItem(props: any) {
   const { items, pipe } = props;

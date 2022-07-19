@@ -42,15 +42,15 @@
     },
     "MODELS": {
       "1": {
-        "LABEL": "Model 1",
+        "LABEL": "Locked for 15 Days (Model 1)",
         "DESC": "Model 1 Description"
       },
       "2": {
-        "LABEL": "Model 2",
+        "LABEL": "No Lock Day (Model 2)",
         "DESC": "Model 2 Description"
       },
       "3": {
-        "LABEL": "Model 3",
+        "LABEL": "Custom Lock Days (Model 3)",
         "DESC": "Model 3 Description"
       }
     }

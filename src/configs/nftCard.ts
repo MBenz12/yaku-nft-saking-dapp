@@ -1,7 +1,9 @@
 import { LAMPORTS_PER_SOL } from "@solana/web3.js";
+import { find } from "lodash";
 import moment from "moment";
+import { ALLOWED_MODELS } from "../config";
 
-export const nftCard = ({ image, name, attributes }: any, { setDialog }: any) => ({
+export const nftCard = ({ image, name, attributes }: any, { handleStake }: any) => ({
   type: "card",
   alt: "",
   showLoading: true,
@@ -24,7 +26,7 @@ export const nftCard = ({ image, name, attributes }: any, { setDialog }: any) =>
         fontWeight: 700,
         textTransform: "none",
       },
-      onClick: () => setDialog(true),
+      onClick: () => handleStake(true),
     },
   ],
   expandItems: [{
@@ -44,7 +46,7 @@ export const nftCard = ({ image, name, attributes }: any, { setDialog }: any) =>
 });
 
 export const stakedNftCard = (
-  { name, image, model, rate, stakedTime, attributes }: any,
+  { name, image, model, rate, lockTime, stakedTime, attributes }: any,
   { handleUnstake, handleClaim }: any
 ) => ({
   type: "card",
@@ -62,7 +64,7 @@ export const stakedNftCard = (
         mr: 1,
         my: 1,
       },
-      label: ({ t }: any) => `${t("DESCRIPTION.MODEL")}: ${model}`,
+      label: ({ t }: any) => `${t(find(ALLOWED_MODELS, ({ value }) => +value === model)?.label)}`,
     },
     {
       type: "chip",
@@ -72,7 +74,16 @@ export const stakedNftCard = (
         my: 1,
       },
       label: ({ t }: any) =>
-        `${t("DESCRIPTION.RATE")}: $${rate / LAMPORTS_PER_SOL}/${t("RATES.PER_DAY")}`,
+        `$${t('TOKEN.NAME')} ${rate / LAMPORTS_PER_SOL}/${t("RATES.PER_DAY")}`,
+    },
+    {
+      type: "chip",
+      color: "info",
+      sx: {
+        mr: 1,
+        my: 1,
+      },
+      label: ({ t }: any) => `${moment(lockTime * 1000).fromNow(true)}`,
     },
     {
       type: "typography",

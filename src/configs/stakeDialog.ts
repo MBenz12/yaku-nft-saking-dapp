@@ -1,4 +1,3 @@
-import { Theme } from "@mui/material";
 import { ALLOWED_LOCKDAYS, ALLOWED_MODELS, MODEL_CAN_SELECT_LOCKDAYS } from "../config";
 
 export const stakeDialog = {
@@ -30,12 +29,13 @@ export const stakeDialog = {
         type: 'box',
         sx: { px: 2 },
         items: [{
-          type:' typography',
+          type: 'typography',
+          sx: { mb: 1 },
+          component: 'h6',
           label: ({ dataModel }: any) => dataModel.name
         }, {
           type: 'chip',
           variant: 'outlined',
-          sx: { mt: 1 },
           label: ({ t, dataModel }: any) => `${t('DESCRIPTION.ROLE')}: ${dataModel.role}`
         }]
       }]
