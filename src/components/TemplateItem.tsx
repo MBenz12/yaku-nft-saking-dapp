@@ -46,19 +46,19 @@ const renderComponent = ({ items, pipe }: any, { item, index }: any) => {
   const components: any = {
     container: () => (
       <Container key={key} {...otherProps}>
-        <TemplateItem items={subItems} pipe={pipe}></TemplateItem>
+        <TemplateItem key={`${key}#item`} items={subItems} pipe={pipe}></TemplateItem>
       </Container>
     ),
     paper: () => (
       <Paper key={key} {...otherProps}>
-        <TemplateItem items={subItems} pipe={pipe}></TemplateItem>
+        <TemplateItem key={`${key}#item`} items={subItems} pipe={pipe}></TemplateItem>
       </Paper>
     ),
     collapse: () => {
       const { ...collapseProps } = otherProps;
-      return <Collapse in={expanded} {...collapseProps}>
+      return <Collapse key={key} in={expanded} {...collapseProps}>
         <CardContent>
-          <TemplateItem items={subItems} pipe={pipe}></TemplateItem>
+          <TemplateItem key={`${key}#item`} items={subItems} pipe={pipe}></TemplateItem>
         </CardContent>
       </Collapse>
     },
@@ -93,6 +93,7 @@ const renderComponent = ({ items, pipe }: any, { item, index }: any) => {
           <CardContent>
             {title && (
               <TemplateItem
+                key={`${key}#item`}
                 items={[
                   {
                     type: "typography",
@@ -104,11 +105,11 @@ const renderComponent = ({ items, pipe }: any, { item, index }: any) => {
               ></TemplateItem>
             )}
             {description && (
-              <TemplateItem items={description} pipe={pipe}></TemplateItem>
+              <TemplateItem key={`${key}#desc#item`} items={description} pipe={pipe}></TemplateItem>
             )}
           </CardContent>
           <CardActions>
-            <TemplateItem items={buttons} pipe={pipe}></TemplateItem>
+            <TemplateItem key={`${key}#action#item`} items={buttons} pipe={pipe}></TemplateItem>
             { canExpand && <ExpandMore
               expand={expanded}
               onClick={handleExpandClick}
@@ -117,37 +118,37 @@ const renderComponent = ({ items, pipe }: any, { item, index }: any) => {
               </ExpandMore>
             }
           </CardActions>
-          { canExpand && <TemplateItem items={expandItems} pipe={pipe}></TemplateItem>}
+          { canExpand && <TemplateItem key={`${key}#expand#item`} items={expandItems} pipe={pipe}></TemplateItem>}
         </Card>
       );
     },
     dialog: () => {
       const { buttons, onClick, ...dialogProps } = otherProps;
-      return <Dialog open={opened} onClick={(event) => onClick && onClick(event, pipe)} {...dialogProps}>
+      return <Dialog key={key} open={opened} onClick={(event) => onClick && onClick(event, pipe)} {...dialogProps}>
         {
           map(subItems, ({ items: contentItems, ...contentProps }, idx) => 
-          <DialogContent key={`${key}#${idx}`} {...contentProps}>
-            <TemplateItem items={contentItems} pipe={pipe}></TemplateItem>
+          <DialogContent key={`${key}#content#${idx}`} {...contentProps}>
+            <TemplateItem key={`${key}#content#item`} items={contentItems} pipe={pipe}></TemplateItem>
           </DialogContent>
         )}
         { buttons && <DialogActions>
-          <TemplateItem items={buttons} pipe={pipe}></TemplateItem>
+          <TemplateItem key={`${key}#action#item`} items={buttons} pipe={pipe}></TemplateItem>
         </DialogActions>}
       </Dialog>
     },
     form: () => {
       const { ...formProps } = otherProps;
-      return <FormControl {...formProps}>
-        <TemplateItem items={subItems} pipe={pipe}></TemplateItem>
+      return <FormControl key={key} {...formProps}>
+        <TemplateItem key={`${key}#item`} items={subItems} pipe={pipe}></TemplateItem>
       </FormControl>
     },
     radioGroup: () => {
-      const { value, onChange, options, radio, ...radioGrpProps } = otherProps;
-      return <RadioGroup value={processFunc(value)} onChange={(event: any) => onChange && onChange(event, pipe)} {...radioGrpProps}>
+      const { value, onChange, options, radio, dataPath, ...radioGrpProps } = otherProps;
+      return <RadioGroup key={key} value={pipe[dataPath]} onChange={(event: any) => onChange && onChange(event, pipe)} {...radioGrpProps}>
         {
-          map(options, ({ value, label, description }) => <>
-            <FormControlLabel value={value} control={<Radio {...radio}/>} label={t(processFunc(label))} />
-            { description && <Typography component='p' sx={{ marginLeft: 4 }}> {t(processFunc(description))} </Typography> }
+          map(options, ({ value, label, description }, idx) => <>
+            <FormControlLabel key={`${key}#radio#${idx}`} value={value} control={<Radio {...radio}/>} label={t(processFunc(label))} />
+            { description && <Typography key={`${key}#p#${idx}`} component='p' sx={{ marginLeft: 4 }}> {t(processFunc(description))} </Typography> }
             </>)
         }
       </RadioGroup>
@@ -156,7 +157,7 @@ const renderComponent = ({ items, pipe }: any, { item, index }: any) => {
       const { spacing } = otherProps;
       return (
         <Grid key={key} container spacing={spacing} {...otherProps}>
-          <TemplateItem items={subItems} pipe={pipe}></TemplateItem>
+          <TemplateItem key={`${key}#grid#item`} items={subItems} pipe={pipe}></TemplateItem>
         </Grid>
       );
     },
@@ -177,8 +178,8 @@ const renderComponent = ({ items, pipe }: any, { item, index }: any) => {
         <Grid key={key} container spacing={gridListSpacing} {...gridListProps}>
           {subItems &&
             map(subItems, ({ label, key }) => (
-              <Grid key={key} item {...breakpoints}>
-                <Paper key={key} elevation={elevation} sx={sx}>
+              <Grid key={`grid#${key}`} item {...breakpoints}>
+                <Paper key={`paper#${key}`} elevation={elevation} sx={sx}>
                   <Typography component="h6">{t(processFunc(label))}</Typography>
                   <Typography component="p">
                     {get(dataModel, key, 0)}
@@ -186,7 +187,7 @@ const renderComponent = ({ items, pipe }: any, { item, index }: any) => {
                 </Paper>
               </Grid>
             ))}
-          <TemplateItem items={extraItems} pipe={pipe}></TemplateItem>
+          <TemplateItem key={`${key}#item`} items={extraItems} pipe={pipe}></TemplateItem>
         </Grid>
       );
     },
@@ -194,7 +195,7 @@ const renderComponent = ({ items, pipe }: any, { item, index }: any) => {
       const { xs } = otherProps;
       return (
         <Grid key={key} item xs={xs} {...otherProps}>
-          <TemplateItem items={subItems} pipe={pipe}></TemplateItem>
+          <TemplateItem key={`${key}#item`} items={subItems} pipe={pipe}></TemplateItem>
         </Grid>
       );
     },
@@ -202,7 +203,7 @@ const renderComponent = ({ items, pipe }: any, { item, index }: any) => {
       const { ...boxProps } = otherProps;
       return (
         <Box key={key} {...boxProps}>
-          <TemplateItem items={subItems} pipe={pipe}></TemplateItem>
+          <TemplateItem key={`${key}#item`} items={subItems} pipe={pipe}></TemplateItem>
         </Box>
       );
     },
@@ -331,7 +332,7 @@ const renderComponent = ({ items, pipe }: any, { item, index }: any) => {
           onClose={(event) => onClose && onClose(event, pipe)}
           {...menuProps}
         >
-          <TemplateItem items={subItems} pipe={pipe}></TemplateItem>
+          <TemplateItem key={`${key}#item`} items={subItems} pipe={pipe}></TemplateItem>
         </Menu>
       );
     },
@@ -339,13 +340,13 @@ const renderComponent = ({ items, pipe }: any, { item, index }: any) => {
       const { ...menuItemProps } = otherProps;
       return (
         <MenuItem key={key} {...menuItemProps}>
-          <TemplateItem items={subItems} pipe={pipe}></TemplateItem>
+          <TemplateItem key={`${key}#item`} items={subItems} pipe={pipe}></TemplateItem>
         </MenuItem>
       );
     },
     image: () => {
       const { src, image, alt = '', ...imageProps } = otherProps;
-      return <Image src={src || (isFunction(image) ? image(pipe) : image)} alt={alt} {...imageProps} />
+      return <Image key={key} src={src || (isFunction(image) ? image(pipe) : image)} alt={alt} {...imageProps} />
     },
     wallet: () => (
       <WalletDialogProvider key={key}>

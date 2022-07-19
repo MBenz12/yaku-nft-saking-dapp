@@ -82,7 +82,7 @@ export default function StakedNFTCard(props: {
   }, []);
   return (
     <TemplateItem
-      key="stakedNftCard"
+      key="staked_nft_card"
       items={items}
       pipe={{ t: props.t, theme, expanded, handleExpandClick }}
     ></TemplateItem>

@@ -91,6 +91,7 @@ export default function HomePage(props: {
     <Box className={className} sx={sx}>
       <Container maxWidth={maxWidth}>
         <TemplateItem
+          key='dashboard_item'
           items={items}
           pipe={{
             startLoading,
@@ -100,26 +101,9 @@ export default function HomePage(props: {
             dataModel,
             userStakedCount,
             rewardAmount,
+            handleClaimAll,
           }}
         ></TemplateItem>
-        <Paper elevation={0}>
-          <Grid container sx={{ justifyContent: "flex-end", py: 2 }}>
-            <Grid item>
-              <ColorButton
-                colorname="yellow"
-                variant="contained"
-                onClick={() => handleClaimAll()}
-                sx={{
-                  borderRadius: 5000,
-                  textTransform: "none",
-                }}
-              >
-                {t("ACTIONS.CLAIM_ALL")} ({rewardAmount.toLocaleString()}{" "}
-                {t("TOKEN.NAME")})
-              </ColorButton>
-            </Grid>
-          </Grid>
-        </Paper>
         {nftList && nftList.length > 0 && (
           <Grid container spacing={2}>
             {map(nftList, (item: any, key: number) => (
@@ -127,7 +111,7 @@ export default function HomePage(props: {
                 <NFTCard
                   mint={item.mintAddress}
                   role={item.role}
-                  key={key}
+                  key={`nft_card#${key}`}
                   startLoading={() => startLoading()}
                   closeLoading={() => closeLoading()}
                   updatePage={() => updatePage()}
@@ -142,7 +126,7 @@ export default function HomePage(props: {
             {map(stakedNfts, (item: StakedNFT, key: number) => (
               <Grid key={`staked_nft_grid_${key}`} item xs={12} md={6} lg={3}>
                 <StakedNFTCard
-                  key={key}
+                  key={`staked_nft_card#${key}`}
                   lockTime={item.lockTime}
                   model={item.model}
                   mint={item.nftAddress}

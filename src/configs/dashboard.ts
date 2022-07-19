@@ -90,5 +90,24 @@ export const dashboard = {
         },
       ],
     },
+    {
+      type: "paper",
+      elevation: 0,
+      items: [{
+        type: 'grid',
+        sx: { justifyContent: "flex-end", py: 2 },
+        items: [{
+          type: 'colorButton',
+          colorname:"yellow",
+          variant:"contained",
+          onClick: (event: any, { handleClaimAll }: any) => handleClaimAll(),
+          sx: {
+            borderRadius: 5000,
+            textTransform: "none",
+          },
+          label: ({ t, rewardAmount}: any) => `${t("ACTIONS.CLAIM_ALL")} (${rewardAmount.toLocaleString()} ${t("TOKEN.NAME")})`
+        }]
+      }]
+    }
   ],
 };

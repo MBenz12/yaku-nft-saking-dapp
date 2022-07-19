@@ -49,7 +49,7 @@ export const stakeDialog = {
         type: 'form',
         items: [{
           type: 'radioGroup',
-          value: ({ dataModel }: any) => dataModel.model,
+          dataPath: 'model',
           onChange: (event: any, { handleChange }: any) => handleChange('model', event),
           options: ALLOWED_MODELS
         }]
@@ -59,7 +59,7 @@ export const stakeDialog = {
       sx: {
         ml: 2,
       },
-      hidden: ({ dataModel }: any) => (dataModel.model !== MODEL_CAN_SELECT_LOCKDAYS),
+      hidden: ({ model }: any) => (model !== MODEL_CAN_SELECT_LOCKDAYS),
       items: [{
         type: 'form',
         sx: {
@@ -67,7 +67,7 @@ export const stakeDialog = {
         },
         items: [{
           type: 'radioGroup',
-          value: ({ dataModel }: any) => dataModel.lockDay,
+          dataPath: 'lockDay',
           row: true,
           radio: {
             size: 'small'

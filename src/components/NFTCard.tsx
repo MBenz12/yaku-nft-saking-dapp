@@ -31,7 +31,7 @@ export default function NFTCard(props: {
   const theme = useTheme();
   const [dataModel, setDataModel] = useState<any>({
     name: '',
-    image: ''
+    image: '',
   });
   const [expanded, setExpanded] = useState(false);
   const [items, setItems] = useState<any>([{}]);
@@ -64,9 +64,9 @@ export default function NFTCard(props: {
 
   return (
     <>
-      {items && items.length && (
+      {items && items.length > 0 && (
         <TemplateItem
-          key="nftCard"
+          key="nft_card"
           items={items}
           pipe={{ t: props.t, theme, expanded, handleExpandClick }}
         ></TemplateItem>

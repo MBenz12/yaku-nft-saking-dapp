@@ -2,6 +2,7 @@ import { useTheme } from "@mui/material";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { PublicKey } from "@solana/web3.js";
 import { cloneDeep } from "lodash";
+import { useState } from "react";
 import { DEFAULT_LOCKDAY, DEFAULT_MODEL, DEFAULT_PERIOD, MODEL_CAN_SELECT_LOCKDAYS, MODEL_PERIOD_MAPPING } from "../config";
 import { stakeDialog } from "../configs/stakeDialog";
 import { stakeNft } from "../contexts/transaction";
@@ -28,14 +29,19 @@ export function StakeDialog(props: {
   } = pipe;
   const theme = useTheme();
   const wallet = useWallet();
+  const [model, setModel] = useState(DEFAULT_MODEL);
+  const [lockDay, setLockDay] = useState(DEFAULT_LOCKDAY);
 
   const handleChange = (key: string, event: any) => {
-    dataModel[key] = event.target.value;
-    setDataModel(cloneDeep(dataModel));
+    switch (key) {
+      case 'model': setModel(event.target.value);
+      break;
+      case 'lockDay': setLockDay(event.target.value);
+    }
   };
 
   const onStake = async () => {
-    const { model = DEFAULT_MODEL, lockDay = DEFAULT_LOCKDAY, role, mint } = dataModel;
+    const { role, mint } = dataModel;
     if (wallet.publicKey === null) return;
     let period = DEFAULT_PERIOD;
     if (Object.keys(MODEL_PERIOD_MAPPING).includes(model)) {
@@ -61,7 +67,8 @@ export function StakeDialog(props: {
       closeLoading();
     }
   };
-  return <TemplateItem items={[stakeDialog]} pipe={{
-    t, theme, opened, onClose, dataModel, handleChange, onStake
+  return <TemplateItem key='stakeDialogItem' items={[stakeDialog]} pipe={{
+    startLoading, closeLoading,
+    t, theme, opened, onClose, dataModel, model, lockDay, handleChange, onStake
   }}></TemplateItem>
 }
