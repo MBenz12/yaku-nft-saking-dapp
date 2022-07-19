@@ -1,16 +1,17 @@
 import { LAMPORTS_PER_SOL } from "@solana/web3.js";
 import moment from "moment";
 
-export const nftCard = (json: any, { setDialog }: any) => ({
+export const nftCard = ({ image, name, attributes }: any, { setDialog }: any) => ({
   type: "card",
   alt: "",
   showLoading: true,
-  image: json.image,
-  src: json.image,
-  title: json.name,
+  image: image,
+  src: image,
+  title: name,
   sx: {
     borderRadius: 4,
   },
+  canExpand: true,
   buttons: [
     {
       type: "button",
@@ -26,10 +27,24 @@ export const nftCard = (json: any, { setDialog }: any) => ({
       onClick: () => setDialog(true),
     },
   ],
+  expandItems: [{
+    type: 'collapse',
+    items: [{
+      type: "chipList",
+      color: "default",
+      variant: "outlined",
+      sx: {
+        mr: 1,
+        my: 1,
+      },
+      data: attributes,
+      label: ({ data }: any) => `${data.trait_type}: ${data.value}`,
+    }]
+  }]
 });
 
 export const stakedNftCard = (
-  { name, image, model, rate, stakedTime }: any,
+  { name, image, model, rate, stakedTime, attributes }: any,
   { handleUnstake, handleClaim }: any
 ) => ({
   type: "card",
@@ -38,6 +53,7 @@ export const stakedNftCard = (
   image: image,
   src: image,
   title: name,
+  canExpand: true,
   description: [
     {
       type: "chip",
@@ -56,19 +72,16 @@ export const stakedNftCard = (
         my: 1,
       },
       label: ({ t }: any) =>
-        `${t("DESCRIPTION.RATE")}: ${rate / LAMPORTS_PER_SOL}`,
+        `${t("DESCRIPTION.RATE")}: $${rate / LAMPORTS_PER_SOL}/${t("RATES.PER_DAY")}`,
     },
     {
-      type: "chip",
-      color: "success",
+      type: "typography",
       sx: {
         mr: 1,
         my: 1,
       },
       label: ({ t }: any) =>
-        `${t("DESCRIPTION.STAKED_TIME")}: ${moment(stakedTime * 1000).format(
-          "YYYY-MM-DD HH:mm:SS"
-        )}`,
+        `${t("DESCRIPTION.STAKED_DURATION")}: ${moment(stakedTime * 1000).fromNow(true)}`,
     },
   ],
   sx: {
@@ -101,4 +114,18 @@ export const stakedNftCard = (
       onClick: () => handleClaim(),
     },
   ],
+  expandItems: [{
+    type: 'collapse',
+    items: [{
+      type: "chipList",
+      color: "default",
+      variant: "outlined",
+      sx: {
+        mr: 1,
+        my: 1,
+      },
+      data: attributes,
+      label: ({ data }: any) => `${data.trait_type}: ${data.value}`,
+    }]
+  }]
 });

@@ -90,22 +90,13 @@ export const getUserPoolData = async (props: {
 
 export const getNFTdetail = async (
   props: any,
-  { setImage, setName, setItems, setDialog, handleUnstake, handleClaim }: any
 ) => {
   try {
-    const { mint, stakedTime } = props;
+    const { mint } = props;
     const uri = await getNftMetaData(new PublicKey(mint));
     const resp = await fetch(uri);
     const json = await resp.json();
-    setImage(json.image);
-    setName(json.name);
-    const template = stakedTime ? stakedNftCard : nftCard;
-    setItems([
-      template(
-        { ...props, ...json },
-        { setDialog, handleUnstake, handleClaim }
-      ),
-    ]);
+    return json;
   } catch (error) {
     console.log(error);
   }

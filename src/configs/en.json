@@ -12,7 +12,8 @@
       "STAKE": "Stake",
       "UNSTAKE": "Unstake",
       "CLAIM": "Claim",
-      "CLAIM_ALL": "💰 Claim All"
+      "CLAIM_ALL": "💰 Claim All",
+      "STAKE_NOW": "Stake Now"
     },
     "RATES": {
       "ADVENTURE": "Adventure Rate",
@@ -21,7 +22,8 @@
       "SPECIALIST": "Specialist Rate",
       "COMMANDER": "Commander Rate",
       "NORMAL": "Normal Rate",
-      "TOTAL_AMOUNT": "Total Staked"
+      "TOTAL_AMOUNT": "Total Staked",
+      "PER_DAY": "day"
     },
     "DASHBOARD": {
       "STAKED_NFT_COUNT": "Your staked nfts"
@@ -29,7 +31,28 @@
     "DESCRIPTION": {
       "MODEL": "Model",
       "RATE": "Rate",
-      "STAKED_TIME": "Staked Time"
+      "STAKED_TIME": "Staked Time",
+      "STAKED_DURATION": "Staked Duration",
+      "ROLE": "Role"
+    },
+    "LOCKDAYS": {
+      "7DAYS": "7 Days",
+      "14DAYS": "14 Days",
+      "30DAYS": "30 Days"
+    },
+    "MODELS": {
+      "1": {
+        "LABEL": "Model 1",
+        "DESC": "Model 1 Description"
+      },
+      "2": {
+        "LABEL": "Model 2",
+        "DESC": "Model 2 Description"
+      },
+      "3": {
+        "LABEL": "Model 3",
+        "DESC": "Model 3 Description"
+      }
     }
   }
 }

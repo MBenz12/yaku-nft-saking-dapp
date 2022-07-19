@@ -49,14 +49,15 @@ export default function HomePage(props: {
 
   const handleClaimAll = async () => {
     try {
+      startLoading();
       await claimRewardAll(
         wallet,
-        () => startLoading(),
-        () => closeLoading(),
-        () => updatePage()
       );
+      updatePage();
     } catch (error) {
       console.log(error);
+    } finally {
+      closeLoading();
     }
   };
 

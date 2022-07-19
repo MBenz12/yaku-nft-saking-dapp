@@ -188,6 +188,19 @@ export const Brightness7Icon = (props: { color?: string }) => {
   );
 };
 
+export const ExpandMoreIcon = (props: { color?: string }) => {
+  return (
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill={`${props.color ? props.color : "white"}`}
+    >
+      <path d="M16.59 8.59 12 13.17 7.41 8.59 6 10l6 6 6-6z"></path>
+    </svg>
+  );
+};
+
 export const SolanaIcon = () => {
   return (
     <svg
@@ -240,6 +253,7 @@ export const Icons: any = ({
     Brightness4Icon,
     Brightness7Icon,
     SolanaIcon,
+    ExpandMoreIcon
   };
   if (!icon || !icons[icon]) {
     return <></>;

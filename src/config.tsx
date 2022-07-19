@@ -24,3 +24,34 @@ export const METAPLEX = new web3.PublicKey(
 
 export const TWITTER = "https://twitter.com/****";
 export const DISCORD = "https://discord.com/****";
+
+export const ALLOWED_MODELS: Array<any> = [{
+  value: '1',
+  label: 'MODELS.1.LABEL',
+  description: 'MODELS.1.DESC'
+}, {
+  value: '2',
+  label: 'MODELS.2.LABEL',
+  description: 'MODELS.2.DESC'
+}, {
+  value: '3',
+  label: 'MODELS.3.LABEL',
+  description: 'MODELS.3.DESC',
+}];
+export const MODEL_CAN_SELECT_LOCKDAYS = '3';
+export const ALLOWED_LOCKDAYS: Array<any> = [{
+  value: '7',
+  label: 'LOCKDAYS.7DAYS'
+}, {
+  value: '14',
+  label: 'LOCKDAYS.14DAYS'
+}, {
+  value: '30',
+  label: 'LOCKDAYS.30DAYS'
+}]
+export const DEFAULT_MODEL = '1';
+export const DEFAULT_LOCKDAY = '7';
+export const MODEL_PERIOD_MAPPING: any = {
+  '1': 15,
+  '2': 0,
+}

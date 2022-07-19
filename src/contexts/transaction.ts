@@ -193,13 +193,9 @@ export const stakeNft = async (
   mint: PublicKey,
   lock_period: number,
   role: String,
-  model: number,
-  startLoading: Function,
-  closeLoading: Function,
-  updatePage: Function
+  model: number
 ) => {
   if (wallet.publicKey === null) return;
-  startLoading();
   const userAddress = wallet.publicKey;
   let cloneWindow: any = window;
   let provider = new anchor.Provider(
@@ -209,116 +205,41 @@ export const stakeNft = async (
   );
   const program = new anchor.Program(IDL as anchor.Idl, PROGRAM_ID, provider);
 
-  try {
-    let userTokenAccount = await getAssociatedTokenAccount(userAddress, mint);
+  let userTokenAccount = await getAssociatedTokenAccount(userAddress, mint);
 
-    const [globalAuthority, bump] = await PublicKey.findProgramAddress(
-      [Buffer.from(GLOBAL_AUTHORITY_SEED)],
-      program.programId
-    );
+  const [globalAuthority, bump] = await PublicKey.findProgramAddress(
+    [Buffer.from(GLOBAL_AUTHORITY_SEED)],
+    program.programId
+  );
 
-    let { instructions, destinationAccounts } =
-      await getATokenAccountsNeedCreate(
-        solConnection,
-        userAddress,
-        globalAuthority,
-        [mint]
-      );
+  let { instructions, destinationAccounts } = await getATokenAccountsNeedCreate(
+    solConnection,
+    userAddress,
+    globalAuthority,
+    [mint]
+  );
 
-    let userPoolKey = await PublicKey.createWithSeed(
-      userAddress,
-      "user-pool",
-      program.programId
-    );
+  let userPoolKey = await PublicKey.createWithSeed(
+    userAddress,
+    "user-pool",
+    program.programId
+  );
 
-    let poolAccount = await solConnection.getAccountInfo(userPoolKey);
-    if (poolAccount === null || poolAccount.data === null) {
-      await initUserPool(wallet);
-    }
-    const metadata = await getMetadata(mint);
-
-    let tx = new Transaction();
-    if (instructions.length > 0) tx.add(instructions[0]);
-    tx.add(
-      program.instruction.stakeNftToFixed(
-        bump,
-        new anchor.BN(lock_period),
-        role,
-        new anchor.BN(model),
-        {
-          accounts: {
-            owner: userAddress,
-            userFixedPool: userPoolKey,
-            globalAuthority,
-            userTokenAccount,
-            destNftTokenAccount: destinationAccounts[0],
-            nftMint: mint,
-            mintMetadata: metadata,
-            tokenProgram: TOKEN_PROGRAM_ID,
-            tokenMetadataProgram: METAPLEX,
-          },
-          instructions: [
-            // ...instructions,
-          ],
-          signers: [],
-        }
-      )
-    );
-
-    const txId = await wallet.sendTransaction(tx, solConnection);
-    await solConnection.confirmTransaction(txId, "finalized");
-    updatePage();
-  } catch (error) {
-    console.log(error);
-  } finally {
-    closeLoading();
+  let poolAccount = await solConnection.getAccountInfo(userPoolKey);
+  if (poolAccount === null || poolAccount.data === null) {
+    await initUserPool(wallet);
   }
-};
+  const metadata = await getMetadata(mint);
 
-export const withdrawNft = async (
-  wallet: WalletContextState,
-  mint: PublicKey,
-  startLoading: Function,
-  closeLoading: Function,
-  updatePage: Function
-) => {
-  if (wallet.publicKey === null) return;
-  startLoading();
-  const userAddress = wallet.publicKey;
-  let cloneWindow: any = window;
-  let provider = new anchor.Provider(
-    solConnection,
-    cloneWindow["solana"],
-    anchor.Provider.defaultOptions()
-  );
-  const program = new anchor.Program(IDL as anchor.Idl, PROGRAM_ID, provider);
-  try {
-    let userTokenAccount = await getAssociatedTokenAccount(userAddress, mint);
-
-    const [globalAuthority, bump] = await PublicKey.findProgramAddress(
-      [Buffer.from(GLOBAL_AUTHORITY_SEED)],
-      program.programId
-    );
-
-    let { instructions, destinationAccounts } =
-      await getATokenAccountsNeedCreate(
-        solConnection,
-        userAddress,
-        globalAuthority,
-        [mint]
-      );
-
-    console.log(instructions, "instructions..");
-    let userPoolKey = await PublicKey.createWithSeed(
-      userAddress,
-      "user-pool",
-      program.programId
-    );
-
-    let tx = new Transaction();
-    if (instructions.length > 0) tx.add(...instructions);
-    tx.add(
-      program.instruction.withdrawNftFromFixed(bump, {
+  let tx = new Transaction();
+  if (instructions.length > 0) tx.add(instructions[0]);
+  tx.add(
+    program.instruction.stakeNftToFixed(
+      bump,
+      new anchor.BN(lock_period),
+      role,
+      new anchor.BN(model),
+      {
         accounts: {
           owner: userAddress,
           userFixedPool: userPoolKey,
@@ -326,32 +247,80 @@ export const withdrawNft = async (
           userTokenAccount,
           destNftTokenAccount: destinationAccounts[0],
           nftMint: mint,
+          mintMetadata: metadata,
           tokenProgram: TOKEN_PROGRAM_ID,
+          tokenMetadataProgram: METAPLEX,
         },
-        instructions: [],
+        instructions: [
+          // ...instructions,
+        ],
         signers: [],
-      })
-    );
+      }
+    )
+  );
 
-    const txId = await wallet.sendTransaction(tx, solConnection);
-    await solConnection.confirmTransaction(txId, "finalized");
-    successAlert("Unstake has been successfully processed!");
-    updatePage();
-  } catch (error) {
-    console.log(error);
-  } finally {
-    closeLoading();
-  }
+  const txId = await wallet.sendTransaction(tx, solConnection);
+  await solConnection.confirmTransaction(txId, "finalized");
 };
 
-export const claimRewardAll = async (
+export const withdrawNft = async (
   wallet: WalletContextState,
-  startLoading: Function,
-  closeLoading: Function,
-  updatePage: Function
+  mint: PublicKey
 ) => {
   if (wallet.publicKey === null) return;
-  startLoading();
+  const userAddress = wallet.publicKey;
+  let cloneWindow: any = window;
+  let provider = new anchor.Provider(
+    solConnection,
+    cloneWindow["solana"],
+    anchor.Provider.defaultOptions()
+  );
+  const program = new anchor.Program(IDL as anchor.Idl, PROGRAM_ID, provider);
+  let userTokenAccount = await getAssociatedTokenAccount(userAddress, mint);
+  const [globalAuthority, bump] = await PublicKey.findProgramAddress(
+    [Buffer.from(GLOBAL_AUTHORITY_SEED)],
+    program.programId
+  );
+
+  let { instructions, destinationAccounts } = await getATokenAccountsNeedCreate(
+    solConnection,
+    userAddress,
+    globalAuthority,
+    [mint]
+  );
+
+  console.log(instructions, "instructions..");
+  let userPoolKey = await PublicKey.createWithSeed(
+    userAddress,
+    "user-pool",
+    program.programId
+  );
+
+  let tx = new Transaction();
+  if (instructions.length > 0) tx.add(...instructions);
+  tx.add(
+    program.instruction.withdrawNftFromFixed(bump, {
+      accounts: {
+        owner: userAddress,
+        userFixedPool: userPoolKey,
+        globalAuthority,
+        userTokenAccount,
+        destNftTokenAccount: destinationAccounts[0],
+        nftMint: mint,
+        tokenProgram: TOKEN_PROGRAM_ID,
+      },
+      instructions: [],
+      signers: [],
+    })
+  );
+
+  const txId = await wallet.sendTransaction(tx, solConnection);
+  await solConnection.confirmTransaction(txId, "finalized");
+  successAlert("Unstake has been successfully processed!");
+};
+
+export const claimRewardAll = async (wallet: WalletContextState) => {
+  if (wallet.publicKey === null) return;
   const userAddress = wallet.publicKey;
   let cloneWindow: any = window;
   let provider = new anchor.Provider(
@@ -366,78 +335,66 @@ export const claimRewardAll = async (
     program.programId
   );
 
-  try {
-    let userPoolKey = await PublicKey.createWithSeed(
-      userAddress,
-      "user-pool",
-      program.programId
-    );
+  let userPoolKey = await PublicKey.createWithSeed(
+    userAddress,
+    "user-pool",
+    program.programId
+  );
 
-    let { instructions, destinationAccounts } =
-      await getATokenAccountsNeedCreate(
-        solConnection,
-        userAddress,
-        userAddress,
-        [REWARD_TOKEN_MINT]
-      );
+  let { instructions, destinationAccounts } = await getATokenAccountsNeedCreate(
+    solConnection,
+    userAddress,
+    userAddress,
+    [REWARD_TOKEN_MINT]
+  );
 
-    let rewardVault = await getAssociatedTokenAccount(
+  let rewardVault = await getAssociatedTokenAccount(
+    globalAuthority,
+    REWARD_TOKEN_MINT
+  );
+  // let tx = new Transaction();
+  // if (instructions.length !== 0) tx.add(...instructions);
+  // tx.add(program.instruction.claimRewardAll(
+  //     bump, {
+  //     accounts: {
+  //         owner: userAddress,
+  //         userFixedPool: userPoolKey,
+  //         globalAuthority,
+  //         rewardVault,
+  //         userRewardAccount: destinationAccounts[0],
+  //         tokenProgram: TOKEN_PROGRAM_ID,
+  //     },
+  //     instructions: [],
+  //     signers: []
+  // }
+  // ))
+
+  // const txId = await wallet.sendTransaction(tx, solConnection);
+  // await solConnection.confirmTransaction(txId, "finalized");
+  const tx = await program.rpc.claimRewardAll(bump, {
+    accounts: {
+      owner: userAddress,
+      userFixedPool: userPoolKey,
       globalAuthority,
-      REWARD_TOKEN_MINT
-    );
-    // let tx = new Transaction();
-    // if (instructions.length !== 0) tx.add(...instructions);
-    // tx.add(program.instruction.claimRewardAll(
-    //     bump, {
-    //     accounts: {
-    //         owner: userAddress,
-    //         userFixedPool: userPoolKey,
-    //         globalAuthority,
-    //         rewardVault,
-    //         userRewardAccount: destinationAccounts[0],
-    //         tokenProgram: TOKEN_PROGRAM_ID,
-    //     },
-    //     instructions: [],
-    //     signers: []
-    // }
-    // ))
+      rewardVault,
+      userRewardAccount: destinationAccounts[0],
+      tokenProgram: TOKEN_PROGRAM_ID,
+    },
+    instructions: [...instructions],
+    signers: [],
+  });
 
-    // const txId = await wallet.sendTransaction(tx, solConnection);
-    // await solConnection.confirmTransaction(txId, "finalized");
-    const tx = await program.rpc.claimRewardAll(bump, {
-      accounts: {
-        owner: userAddress,
-        userFixedPool: userPoolKey,
-        globalAuthority,
-        rewardVault,
-        userRewardAccount: destinationAccounts[0],
-        tokenProgram: TOKEN_PROGRAM_ID,
-      },
-      instructions: [...instructions],
-      signers: [],
-    });
+  console.log("Your transaction signature", tx);
+  await solConnection.confirmTransaction(tx, "singleGossip");
 
-    console.log("Your transaction signature", tx);
-    await solConnection.confirmTransaction(tx, "singleGossip");
-
-    successAlert("Claim has been successfully processed!");
-    updatePage();
-  } catch (error) {
-    console.log(error);
-  } finally {
-    closeLoading();
-  }
+  successAlert("Claim has been successfully processed!");
 };
 
 export const claimReward = async (
   wallet: WalletContextState,
-  mint: PublicKey,
-  startLoading: Function,
-  closeLoading: Function,
-  updatePage: Function
+  mint: PublicKey
 ) => {
   if (wallet.publicKey === null) return;
-  startLoading();
   const userAddress = wallet.publicKey;
   let cloneWindow: any = window;
   let provider = new anchor.Provider(
@@ -446,55 +403,47 @@ export const claimReward = async (
     anchor.Provider.defaultOptions()
   );
   const program = new anchor.Program(IDL as anchor.Idl, PROGRAM_ID, provider);
-  try {
-    const [globalAuthority, bump] = await PublicKey.findProgramAddress(
-      [Buffer.from(GLOBAL_AUTHORITY_SEED)],
-      program.programId
-    );
+  const [globalAuthority, bump] = await PublicKey.findProgramAddress(
+    [Buffer.from(GLOBAL_AUTHORITY_SEED)],
+    program.programId
+  );
 
-    let userPoolKey = await PublicKey.createWithSeed(
-      userAddress,
-      "user-pool",
-      program.programId
-    );
+  let userPoolKey = await PublicKey.createWithSeed(
+    userAddress,
+    "user-pool",
+    program.programId
+  );
 
-    let { instructions, destinationAccounts } =
-      await getATokenAccountsNeedCreate(
-        solConnection,
-        userAddress,
-        userAddress,
-        [REWARD_TOKEN_MINT]
-      );
-    let rewardVault = await getAssociatedTokenAccount(
-      globalAuthority,
-      REWARD_TOKEN_MINT
-    );
-    let tx = new Transaction();
-    if (instructions.length > 0) tx.add(...instructions);
-    tx.add(
-      program.instruction.claimReward(bump, {
-        accounts: {
-          owner: userAddress,
-          userFixedPool: userPoolKey,
-          globalAuthority,
-          rewardVault,
-          userRewardAccount: destinationAccounts[0],
-          nftMint: mint,
-          tokenProgram: TOKEN_PROGRAM_ID,
-        },
-        instructions: [],
-        signers: [],
-      })
-    );
-    const txId = await wallet.sendTransaction(tx, solConnection);
-    await solConnection.confirmTransaction(txId, "finalized");
-    successAlert("Claim has been successfully processed!");
-    updatePage();
-  } catch (error) {
-    console.log(error);
-  } finally {
-    closeLoading();
-  }
+  let { instructions, destinationAccounts } = await getATokenAccountsNeedCreate(
+    solConnection,
+    userAddress,
+    userAddress,
+    [REWARD_TOKEN_MINT]
+  );
+  let rewardVault = await getAssociatedTokenAccount(
+    globalAuthority,
+    REWARD_TOKEN_MINT
+  );
+  let tx = new Transaction();
+  if (instructions.length > 0) tx.add(...instructions);
+  tx.add(
+    program.instruction.claimReward(bump, {
+      accounts: {
+        owner: userAddress,
+        userFixedPool: userPoolKey,
+        globalAuthority,
+        rewardVault,
+        userRewardAccount: destinationAccounts[0],
+        nftMint: mint,
+        tokenProgram: TOKEN_PROGRAM_ID,
+      },
+      instructions: [],
+      signers: [],
+    })
+  );
+  const txId = await wallet.sendTransaction(tx, solConnection);
+  await solConnection.confirmTransaction(txId, "finalized");
+  successAlert("Claim has been successfully processed!");
 };
 export const getGlobalState = async (): Promise<GlobalPool | null> => {
   let cloneWindow: any = window;

@@ -6,6 +6,7 @@ import {
   CardContent,
   CardMedia,
   Chip,
+  Collapse,
   Grid,
   IconButton,
   Link,
@@ -20,13 +21,14 @@ import {
   WalletMultiButton,
 } from "@solana/wallet-adapter-material-ui";
 import { get, map, isFunction } from "lodash";
-import { Icons, SolanaIcon } from "./svgIcons";
+import { ExpandMoreIcon, Icons, SolanaIcon } from "./svgIcons";
 import { Image } from "mui-image";
 import { ColorButton } from "./ColorButton";
+import { ExpandMore } from "./ExpandMore";
 
 const getKey = (item: any, index: number) => `${get(item, "type")}#${index}`;
 const renderComponent = ({ items, pipe }: any, { item, index }: any) => {
-  const { t, theme, colorMode, dataModel } = pipe;
+  const { t, theme, colorMode, dataModel, expanded, handleExpandClick } = pipe;
   const isDarkMode = theme?.palette?.mode === "dark";
   const { type, items: subItems, ...otherProps } = item;
   const key = getKey(item, index);
@@ -41,6 +43,14 @@ const renderComponent = ({ items, pipe }: any, { item, index }: any) => {
         <TemplateItem items={subItems} pipe={pipe}></TemplateItem>
       </Paper>
     ),
+    collapse: () => {
+      const { ...collapseProps } = otherProps;
+      return <Collapse in={expanded} {...collapseProps}>
+        <CardContent>
+          <TemplateItem items={subItems} pipe={pipe}></TemplateItem>
+        </CardContent>
+      </Collapse>
+    },
     card: () => {
       const {
         image,
@@ -52,6 +62,8 @@ const renderComponent = ({ items, pipe }: any, { item, index }: any) => {
         buttons,
         showLoading,
         fit = "cover",
+        canExpand,
+        expandItems,
         ...cardProps
       } = otherProps;
       return (
@@ -86,7 +98,15 @@ const renderComponent = ({ items, pipe }: any, { item, index }: any) => {
           </CardContent>
           <CardActions>
             <TemplateItem items={buttons} pipe={pipe}></TemplateItem>
+            { canExpand && <ExpandMore
+              expand={expanded}
+              onClick={handleExpandClick}
+              aria-expanded={expanded}>
+                <ExpandMoreIcon />
+              </ExpandMore>
+            }
           </CardActions>
+          { canExpand && <TemplateItem items={expandItems} pipe={pipe}></TemplateItem>}
         </Card>
       );
     },
@@ -160,6 +180,18 @@ const renderComponent = ({ items, pipe }: any, { item, index }: any) => {
           label={t(isFunction(chipLabel) ? chipLabel(pipe) : chipLabel)}
           {...chipProps}
         ></Chip>
+      );
+    },
+    chipList: () => {
+      const { label: chipListLabel, data, ...chipListProps } = otherProps;
+      return (
+        <>{
+          map(data, (dataItem: any, idx: number) => <Chip
+            key={`${key}#${idx}`}
+            label={t(isFunction(chipListLabel) ? chipListLabel({ data: dataItem }, pipe) : chipListLabel)}
+            {...chipListProps}
+          ></Chip>)
+        }</>
       );
     },
     button: () => {
