@@ -315,11 +315,12 @@ const renderComponent = ({ items, pipe }: any, { item, index }: any) => {
         icon: linkIcon,
         iconColor: linkIconColor,
         linkLabel = "",
+        className,
         ...linkProps
       } = otherProps;
       return (
-        <Link key={key} {...linkProps}>
-          <Icons icon={linkIcon} color={linkIconColor}></Icons> {processFunc(linkLabel)}
+        <Link key={key} className={processFunc(className)} {...linkProps}>
+          {linkIcon && <Icons icon={linkIcon} color={linkIconColor}></Icons>} {processFunc(linkLabel)}
         </Link>
       );
     },
