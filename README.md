@@ -541,3 +541,200 @@ export const stakedNftCard = (
 ```
 
 #### `./stakeDialog.ts`
+
+To config the layout for Stake dialog after pressed the stake button from a NFT card, we can use a template format to define the content. Please view the `TemplateItem` section for details.
+
+Example:
+
+```ts
+export const stakeDialog = {
+  type: 'dialog',
+  items: [{
+    type: 'content',
+    items: [{
+      type: 'iconButton',
+      icon: 'CloseIcon',
+      iconColor: '#808080',
+      sx: {
+        position: 'absolute',
+        right: 10,
+        top: 10,
+      },
+      onClick: (event: any, { onClose }: any) => onClose()
+    }, {
+      type: 'box',
+      sx: {
+        display: 'flex',
+      },
+      items: [{
+        type: 'image',
+        image: ({ dataModel }: any) => dataModel.image,
+        showLoading: true,
+        width: 120,
+        height: 120,
+      }, {
+        type: 'box',
+        sx: { px: 2 },
+        items: [{
+          type: 'typography',
+          sx: { mb: 1 },
+          component: 'h6',
+          label: ({ dataModel }: any) => dataModel.name
+        }, {
+          type: 'chip',
+          variant: 'outlined',
+          label: ({ t, dataModel }: any) => `${t('DESCRIPTION.ROLE')}: ${dataModel.role}`
+        }]
+      }]
+    }]
+  }, {
+    type: 'content',
+    dividers: true,
+    items: [{
+      type: 'box',
+      items: [{
+        type: 'form',
+        items: [{
+          type: 'radioGroup',
+          dataPath: 'model',
+          onChange: (event: any, { handleChange }: any) => handleChange('model', event),
+          options: ALLOWED_MODELS
+        }]
+      }]
+    }, {
+      type: 'box',
+      sx: {
+        ml: 2,
+      },
+      hidden: ({ model }: any) => (model !== MODEL_CAN_SELECT_LOCKDAYS),
+      items: [{
+        type: 'form',
+        sx: {
+          marginLeft: 2
+        },
+        items: [{
+          type: 'radioGroup',
+          dataPath: 'lockDay',
+          row: true,
+          radio: {
+            size: 'small'
+          },
+          onChange: (event: any, { handleChange }: any) => handleChange('lockDay', event),
+          options: ALLOWED_LOCKDAYS,
+        }]
+      }]
+    }]
+  }],
+  buttons: [{
+    type: 'button',
+    label: 'ACTIONS.STAKE_NOW',
+    color: 'success',
+    variant: 'outlined',
+    sx: {
+      mt: 2,
+      borderRadius: 5000
+    },
+    onClick:(event: any, { onStake, model, lockDay }: any) => onStake(model, lockDay),
+  }]
+}
+```
+
+### Template Items
+
+To ease the customization of UI, we use `TemplateItem` to render the UI by template, so for different deployment, we can highly customize the layout and features without modifying the code for components or the framework.
+
+The `template` mainly structured as a JS object, here is a sample of template.
+
+```ts
+{
+  type: "container",
+  items: [{
+    type: "grid",
+    items: [{
+      type: 'gridItem',
+      items: [{
+        type: "typography",
+        label: "Hello world"
+      }]
+    }]
+  }]
+}
+```
+
+This template will render a UI layout same as
+
+```tsx
+<Container>
+  <Grid container>
+    <Grid item>
+      <Typography>Hello world</Typography>
+    </Grid>
+  </Grid>
+</Container>
+```
+
+To ease the handling of data and functions, we throw all the things to `pipe`, and all components in all levels can use the `pipe` as for customize actions. For example:
+
+```ts
+{
+  type: 'colorButton',
+  colorname:"yellow",
+  variant:"contained",
+  onClick: (event: any, { handleClaimAll }: any) => handleClaimAll(),
+  sx: {
+    borderRadius: 5000,
+    textTransform: "none",
+  },
+  label: ({ t, rewardAmount}: any) => `${t("ACTIONS.CLAIM_ALL")} (${rewardAmount.toLocaleString()} ${t("TOKEN.NAME")})`
+}
+```
+
+This will render a `<ColorButton/>` component. As you can see, in this template item, we have some override on the onClick function and the label.
+
+```ts
+onClick: (event: any, { handleClaimAll }: any) => handleClaimAll()
+```
+
+```ts
+label: ({ t, rewardAmount}: any) => `${t("ACTIONS.CLAIM_ALL")} (${rewardAmount.toLocaleString()} ${t("TOKEN.NAME")})`
+```
+
+For most of the onClick function callback in the `TemplateItem`, we can get the pipe by `(event, pipe) => {}` to handle some extra features that cannot be handled by `TemplateItem` easily.
+In this case, we have a `handleClaimAll` function defaultly throw into the pipe by the page, so we can call this function from the pipe in the `onClick` callback.
+
+And for the label, we can define a function instead of a string to resolve some complex text combination. The `pipe` can be used by `(pipe) => {}`. `t` is the translation function to get the defined text in `i18n` json.
+
+Currently the `TemplateItem` support the following components:
+
+Components from MUI v5 (please refer to MUI documentation) as `type`
+
+| `type` | MUI Component | Special properties |
+| :----------| :---------------- | :- |
+| `container` | `<Container/>` | - |
+| `paper` | `<Paper/>`| - |
+| `collapse` | `<Collapse><CardContent>{{items}}</CardContent></Collapse>` | `pipe.expanded` |
+| `card` | `<Card><CardMedia/><CardContent>{{items}}</CardContent><CardActions>{{buttons}}</CardActions>{{expandItems}}</Card>` | `image, src, imageHeight, alt, title, description, buttons, showLoading, fit = "cover", canExpand, expandItems` |
+| `dialog` | `<>{{<DialogContent></DialogContent><DialogActions>{{buttons}}</DialogActions>}}</>` | `buttons` |
+| `form` | `<FormControl>{{items}}</FormControl>` | - |
+| `radioGroup` | `<RadioGroup>{{options}}</RadioGroup>` | `value, onChange, options, radio, dataPath` |
+| `grid` | `<Grid container>{{items}}</Grid>` | - |
+| `gridList` | `<Grid container>{{<Grid item><Paper><Typography/><Typography/></Paper></Grid>}}{{extraItems}}</Grid>` | `breakpoints = { xs: 3 }, elevation = 1, sx = { p: 2, display: "flex", justifyContent: "space-between" }, extraItems` |
+| `gridItem` | `<Grid item>{{items}}</Grid>` | - |
+| `box` | `<Box>{{items}}</Box>` | - |
+| `typography` | `<Typography/>` | `label` |
+| `chip` | `<Chip/>` | `label` |
+| `chipList` | `<>{{<Chip/>}}</>` | `data, label` |
+| `button` | `<Button/>` | `label, onClick` |
+| `iconButton` | `<IconButton/>` | `icon, iconColor, onClick` |
+| `link` | `<Link><Icons></Icons></Link>` | `icon, iconColor, linkLabel` |
+| `menu` | `<Menu>{{items}}</Menu>` | `onClose`, `pipe.anchorElNav` |
+| `menuItem` | `<MenuItem>{{items}}</MenuItem>` | - |
+| `image` | `<Image/>` (mui-image) | `src, image, alt = '', showLoading` |
+
+Custom Component defined beside `TemplateItem` but also can be used.
+
+| `type` | Custom Component | Properties | Remarks |
+| :- | :- | :- | :- |
+| `colorButton` | `<ColorButton/>` | `label, onClick, colorname` | Styled Button |
+| `toggleColorButton` | `<IconButton/>` | `iconColor` | Icon button for Dark / Light Mode switch |
+| `wallet` | `<WalletDialogProvider><WalletMultiButton><SolanaIcon/></WalletMultiButton></WalletDialogProvider>` | - | wallet integration |
