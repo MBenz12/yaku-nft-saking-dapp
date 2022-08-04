@@ -11,6 +11,8 @@
     "ACTIONS": {
       "STAKE": "Stake",
       "UNSTAKE": "Unstake",
+      "STAKE_ALL": "Stake All",
+      "UNSTAKE_ALL": "Unstake All",
       "CLAIM": "Claim",
       "CLAIM_ALL": "💰 Claim All",
       "STAKE_NOW": "Stake Now"

@@ -98,6 +98,28 @@ export const dashboard = {
         sx: { justifyContent: "flex-end", py: 2 },
         items: [{
           type: 'colorButton',
+          colorname:"purple",
+          variant:"contained",
+          onClick: (event: any, { handleStakeAll }: any) => handleStakeAll(),
+          sx: {
+            borderRadius: 5000,
+            textTransform: "none",
+            marginRight: '8px'
+          },
+          label: ({ t }: any) => t("ACTIONS.STAKE_ALL")
+        }, {
+          type: 'colorButton',
+          colorname:"red",
+          variant:"contained",
+          onClick: (event: any, { handleUnstakeAll }: any) => handleUnstakeAll(),
+          sx: {
+            borderRadius: 5000,
+            textTransform: "none",
+            marginRight: '8px'
+          },
+          label: ({ t }: any) => t("ACTIONS.UNSTAKE_ALL")
+        }, {
+          type: 'colorButton',
           colorname:"yellow",
           variant:"contained",
           onClick: (event: any, { handleClaimAll }: any) => handleClaimAll(),

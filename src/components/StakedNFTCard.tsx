@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { TFunction } from "react-i18next";
 import { stakedNftCard } from "../configs/nftCard";
 import { claimReward, withdrawNft } from "../contexts/transaction";
+import useToasts from "../hooks/useToasts";
 import { getNFTdetail } from "../services/fetchData";
 import { TemplateItem } from "./TemplateItem";
 
@@ -25,6 +26,7 @@ export default function StakedNFTCard(props: {
   const [items, setItems] = useState<any>([{}]);
   const [expanded, setExpanded] = useState(false);
   const wallet = useWallet();
+  const { showInfoToast } = useToasts();
 
   const handleExpandClick = () => {
     setExpanded(!expanded);
@@ -38,6 +40,7 @@ export default function StakedNFTCard(props: {
         new PublicKey(props.mint)
       );
       updatePage();
+      showInfoToast('You have successfully unstaked your NFT.');
     } catch (error) {
       console.error(error);
     } finally {
@@ -54,6 +57,7 @@ export default function StakedNFTCard(props: {
         new PublicKey(props.mint),
       );
       updatePage();
+      showInfoToast('You have successfully claimed your NFTs reward.');
     } catch (error) {
       console.log(error);
     } finally {

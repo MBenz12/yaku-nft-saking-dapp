@@ -8,6 +8,7 @@ import { TFunction } from "react-i18next";
 import { ALLOWED_MODELS, DEFAULT_LOCKDAY, DEFAULT_MODEL, DEFAULT_PERIOD, MODEL_CAN_SELECT_LOCKDAYS, MODEL_PERIOD_MAPPING } from "../config";
 import { nftCard } from "../configs/nftCard";
 import { stakeNft } from "../contexts/transaction";
+import useToasts from "../hooks/useToasts";
 import { getNFTdetail } from "../services/fetchData";
 import { StakeDialog } from "./StakeDialog";
 import { TemplateItem } from "./TemplateItem";
@@ -21,6 +22,7 @@ export default function NFTCard(props: {
   t: TFunction;
 }) {
   const wallet = useWallet();
+  const { showInfoToast, showErrorToast } = useToasts();
   const { startLoading, closeLoading, updatePage, t, mint, role } = props;
   const theme = useTheme();
   const [dataModel, setDataModel] = useState<any>({
@@ -66,7 +68,9 @@ export default function NFTCard(props: {
         parseInt(model)
       );
       updatePage();
+      showInfoToast('You have successfully staked your NFT.');
     } catch (error) {
+      showErrorToast('An error has occured while staking your nft, please try again.');
       console.log(error);
     } finally {
       closeLoading();
