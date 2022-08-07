@@ -16,7 +16,7 @@ import { TFunction } from "react-i18next";
 import { Box, Breakpoint, Container, Grid } from "@mui/material";
 import { TemplateItem } from "../components/TemplateItem";
 import { fields } from "../configs/dashboard";
-import { map } from "lodash";
+import { map, sortBy } from "lodash";
 import { PublicKey } from "@solana/web3.js";
 import { DEFAULT_LOCKDAY, DEFAULT_MODEL } from "../config";
 import { useToasts } from "../hooks/useToasts";
@@ -84,13 +84,13 @@ export default function HomePage(props: {
         +DEFAULT_MODEL
       );
       showInfoToast("You have staked all of your NFTs.");
-      updatePage();
     } catch (error) {
       showErrorToast(
         "An error has occured while staking your nfts, please try again."
       );
       console.error(error);
     } finally {
+      updatePage();
       closeLoading();
     }
   };
@@ -103,7 +103,6 @@ export default function HomePage(props: {
         wallet,
         map(stakedNfts, (nft) => new PublicKey(nft.nftAddress))
       );
-      updatePage();
       showInfoToast("You have unstaked all of your NFTs.");
     } catch (error) {
       showErrorToast(
@@ -111,6 +110,7 @@ export default function HomePage(props: {
       );
       console.error(error);
     } finally {
+      updatePage();
       closeLoading();
     }
   };
@@ -119,7 +119,7 @@ export default function HomePage(props: {
     try {
       startLoading();
       const list = await getUnstakedNFTs({ wallet });
-      setNftList(list);
+      setNftList(sortBy(list, "name"));
       const respData = await getGlobalData({ fields });
       setDataModel(respData);
       const {
@@ -129,7 +129,7 @@ export default function HomePage(props: {
       } = await getUserPoolData({ wallet });
       setUserStakedCount(count);
       setRewardAmount(claimReward);
-      setStakedNfts(staked);
+      setStakedNfts(sortBy(staked, "name"));
     } catch (error) {
       console.error(error);
     } finally {

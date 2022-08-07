@@ -89,9 +89,7 @@ export const getUserPoolData = async (props: {
   };
 };
 
-export const getNFTdetail = async (
-  props: any,
-) => {
+export const getNFTdetail = async (props: any) => {
   try {
     const { mint } = props;
     const uri = await getNftMetaData(new PublicKey(mint));
