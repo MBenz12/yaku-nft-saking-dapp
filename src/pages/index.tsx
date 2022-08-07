@@ -167,7 +167,7 @@ export default function HomePage(props: {
                 <NFTCard
                   mint={item.mintAddress}
                   role={item.role}
-                  key={`nft_card#${key}`}
+                  key={`nft_card#${item.mintAddress}`}
                   startLoading={() => startLoading()}
                   closeLoading={() => closeLoading()}
                   updatePage={() => updatePage()}
@@ -182,7 +182,7 @@ export default function HomePage(props: {
             {map(stakedNfts, (item: StakedNFT, key: number) => (
               <Grid key={`staked_nft_grid_${key}`} item xs={12} md={6} lg={3}>
                 <StakedNFTCard
-                  key={`staked_nft_card#${key}`}
+                  key={`staked_nft_card#${item.nftAddress}`}
                   lockTime={item.lockTime}
                   model={item.model}
                   mint={item.nftAddress}
