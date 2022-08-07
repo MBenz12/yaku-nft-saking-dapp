@@ -324,78 +324,81 @@ export const withdrawNft = async (
 export const stakeAllNft = async (
   wallet: WalletContextState,
   nftList: Array<{
-    mint: PublicKey,
-    role: String,
+    mint: PublicKey;
+    role: String;
   }>,
   lock_period: number,
-  model: number) => {
-    if (wallet.publicKey === null) return;
-    const userAddress = wallet.publicKey;
-    let cloneWindow: any = window;
-    let provider = new anchor.Provider(
-      solConnection,
-      cloneWindow["solana"],
-      anchor.Provider.defaultOptions()
-    );
-    const program = new anchor.Program(IDL as anchor.Idl, PROGRAM_ID, provider);
-    const [globalAuthority, bump] = await PublicKey.findProgramAddress(
-      [Buffer.from(GLOBAL_AUTHORITY_SEED)],
-      program.programId
-    );
-    let userPoolKey = await PublicKey.createWithSeed(
-      userAddress,
-      "user-pool",
-      program.programId
-    );
-    let poolAccount = await solConnection.getAccountInfo(userPoolKey);
-    if (poolAccount === null || poolAccount.data === null) {
-      await initUserPool(wallet);
-    }
-    let { instructions, destinationAccounts } = await getATokenAccountsNeedCreate(
-      solConnection,
-      userAddress,
-      globalAuthority,
-      map(nftList, ({mint}) => mint)
-    );
-    const txnMulti = new anchor.web3.Transaction();
-    if (instructions.length > 0) txnMulti.add(instructions[0]);
-    await Promise.mapSeries(nftList, async ({ mint, role }) => {
-      let userTokenAccount = await getAssociatedTokenAccount(userAddress, mint);
+  model: number
+) => {
+  if (wallet.publicKey === null) return;
+  const userAddress = wallet.publicKey;
+  let cloneWindow: any = window;
+  let provider = new anchor.Provider(
+    solConnection,
+    cloneWindow["solana"],
+    anchor.Provider.defaultOptions()
+  );
+  const program = new anchor.Program(IDL as anchor.Idl, PROGRAM_ID, provider);
+  const [globalAuthority, bump] = await PublicKey.findProgramAddress(
+    [Buffer.from(GLOBAL_AUTHORITY_SEED)],
+    program.programId
+  );
+  let userPoolKey = await PublicKey.createWithSeed(
+    userAddress,
+    "user-pool",
+    program.programId
+  );
+  let poolAccount = await solConnection.getAccountInfo(userPoolKey);
+  if (poolAccount === null || poolAccount.data === null) {
+    await initUserPool(wallet);
+  }
+  console.log(nftList);
+  let { instructions, destinationAccounts } = await getATokenAccountsNeedCreate(
+    solConnection,
+    userAddress,
+    globalAuthority,
+    map(nftList, ({ mint }) => mint)
+  );
+  const txnMulti = new anchor.web3.Transaction();
+  if (instructions.length > 0) txnMulti.add(instructions[0]);
+  console.log(instructions);
+  await Promise.mapSeries(nftList, async ({ mint, role }) => {
+    let userTokenAccount = await getAssociatedTokenAccount(userAddress, mint);
 
-      const metadata = await getMetadata(mint);
-      txnMulti.add(
-        program.instruction.stakeNftToFixed(
-          bump,
-          new anchor.BN(lock_period),
-          role,
-          new anchor.BN(model),
-          {
-            accounts: {
-              owner: userAddress,
-              userFixedPool: userPoolKey,
-              globalAuthority,
-              userTokenAccount,
-              destNftTokenAccount: destinationAccounts[0],
-              nftMint: mint,
-              mintMetadata: metadata,
-              tokenProgram: TOKEN_PROGRAM_ID,
-              tokenMetadataProgram: METAPLEX,
-            },
-            instructions: [
-              // ...instructions,
-            ],
-            signers: [],
-          }
-        )
-      );
-    });
-    const txId = await wallet.sendTransaction(txnMulti, solConnection);
-    await solConnection.confirmTransaction(txId, "finalized");
-}
+    const metadata = await getMetadata(mint);
+    txnMulti.add(
+      program.instruction.stakeNftToFixed(
+        bump,
+        new anchor.BN(lock_period),
+        role,
+        new anchor.BN(model),
+        {
+          accounts: {
+            owner: userAddress,
+            userFixedPool: userPoolKey,
+            globalAuthority,
+            userTokenAccount,
+            destNftTokenAccount: destinationAccounts[0],
+            nftMint: mint,
+            mintMetadata: metadata,
+            tokenProgram: TOKEN_PROGRAM_ID,
+            tokenMetadataProgram: METAPLEX,
+          },
+          instructions: [
+            // ...instructions,
+          ],
+          signers: [],
+        }
+      )
+    );
+  });
+  const txId = await wallet.sendTransaction(txnMulti, solConnection);
+  await solConnection.confirmTransaction(txId, "finalized");
+};
 
 export const withdrawAllNft = async (
   wallet: WalletContextState,
-  mintList: Array<PublicKey>,
+  mintList: Array<PublicKey>
 ) => {
   if (wallet.publicKey === null) return;
   const userAddress = wallet.publicKey;
@@ -424,7 +427,7 @@ export const withdrawAllNft = async (
   );
   let txnMulti = new Transaction();
   if (instructions.length > 0) txnMulti.add(...instructions);
-  await Promise.mapSeries(mintList, async mint => {
+  await Promise.mapSeries(mintList, async (mint) => {
     let userTokenAccount = await getAssociatedTokenAccount(userAddress, mint);
     txnMulti.add(
       program.instruction.withdrawNftFromFixed(bump, {
@@ -441,11 +444,11 @@ export const withdrawAllNft = async (
         signers: [],
       })
     );
-  })
+  });
   const txId = await wallet.sendTransaction(txnMulti, solConnection);
   await solConnection.confirmTransaction(txId, "finalized");
   successAlert("Unstake all has been successfully processed!");
-}
+};
 
 export const claimRewardAll = async (wallet: WalletContextState) => {
   if (wallet.publicKey === null) return;
