@@ -393,7 +393,7 @@ export const stakeAllNft = async (
   const txnMulti = new anchor.web3.Transaction();
   if (instructions.length > 0) txnMulti.add(instructions[0]);
   console.log(instructions);
-  await Promise.mapSeries(nftList, async ({ mint, role }) => {
+  await Promise.mapSeries(nftList, async ({ mint, role }, idx) => {
     let userTokenAccount = await getAssociatedTokenAccount(userAddress, mint);
 
     const metadata = await getMetadata(mint);
@@ -409,7 +409,7 @@ export const stakeAllNft = async (
             userFixedPool: userPoolKey,
             globalAuthority,
             userTokenAccount,
-            destNftTokenAccount: destinationAccounts[0],
+            destNftTokenAccount: destinationAccounts[idx],
             nftMint: mint,
             mintMetadata: metadata,
             tokenProgram: TOKEN_PROGRAM_ID,
@@ -423,8 +423,20 @@ export const stakeAllNft = async (
       )
     );
   });
+  txnMulti.feePayer = userAddress;
+  const anyTransaction = txnMulti;
+  const latestBlockHash = await solConnection.getLatestBlockhash();
+  anyTransaction.recentBlockhash = latestBlockHash.blockhash;
+  anyTransaction.lastValidBlockHeight = latestBlockHash.lastValidBlockHeight;
   const txId = await wallet.sendTransaction(txnMulti, solConnection);
-  await solConnection.confirmTransaction(txId, "finalized");
+  await solConnection.confirmTransaction(
+    {
+      blockhash: latestBlockHash.blockhash,
+      lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
+      signature: txId,
+    },
+    "finalized"
+  );
 };
 
 export const withdrawAllNft = async (
@@ -458,7 +470,7 @@ export const withdrawAllNft = async (
   );
   let txnMulti = new Transaction();
   if (instructions.length > 0) txnMulti.add(...instructions);
-  await Promise.mapSeries(mintList, async (mint) => {
+  await Promise.mapSeries(mintList, async (mint, idx) => {
     let userTokenAccount = await getAssociatedTokenAccount(userAddress, mint);
     txnMulti.add(
       program.instruction.withdrawNftFromFixed(bump, {
@@ -467,7 +479,7 @@ export const withdrawAllNft = async (
           userFixedPool: userPoolKey,
           globalAuthority,
           userTokenAccount,
-          destNftTokenAccount: destinationAccounts[0],
+          destNftTokenAccount: destinationAccounts[idx],
           nftMint: mint,
           tokenProgram: TOKEN_PROGRAM_ID,
         },
@@ -476,8 +488,20 @@ export const withdrawAllNft = async (
       })
     );
   });
+  txnMulti.feePayer = userAddress;
+  const anyTransaction = txnMulti;
+  const latestBlockHash = await solConnection.getLatestBlockhash();
+  anyTransaction.recentBlockhash = latestBlockHash.blockhash;
+  anyTransaction.lastValidBlockHeight = latestBlockHash.lastValidBlockHeight;
   const txId = await wallet.sendTransaction(txnMulti, solConnection);
-  await solConnection.confirmTransaction(txId, "finalized");
+  await solConnection.confirmTransaction(
+    {
+      blockhash: latestBlockHash.blockhash,
+      lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
+      signature: txId,
+    },
+    "finalized"
+  );
   successAlert("Unstake all has been successfully processed!");
 };
 
