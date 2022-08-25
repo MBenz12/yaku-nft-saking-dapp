@@ -183,8 +183,19 @@ export const initUserPool = async (wallet: WalletContextState) => {
         signers: [],
       })
     );
+    const anyTransaction = tx;
+    const latestBlockHash = await solConnection.getLatestBlockhash();
+    anyTransaction.recentBlockhash = latestBlockHash.blockhash;
+    anyTransaction.lastValidBlockHeight = latestBlockHash.lastValidBlockHeight;
     const txId = await wallet.sendTransaction(tx, solConnection);
-    await solConnection.confirmTransaction(txId, "finalized");
+    await solConnection.confirmTransaction(
+      {
+        blockhash: latestBlockHash.blockhash,
+        lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
+        signature: txId,
+      },
+      "finalized"
+    );
   } catch (error) {
     console.log(error);
   }
@@ -260,9 +271,19 @@ export const stakeNft = async (
       }
     )
   );
-
+  const anyTransaction = tx;
+  const latestBlockHash = await solConnection.getLatestBlockhash();
+  anyTransaction.recentBlockhash = latestBlockHash.blockhash;
+  anyTransaction.lastValidBlockHeight = latestBlockHash.lastValidBlockHeight;
   const txId = await wallet.sendTransaction(tx, solConnection);
-  await solConnection.confirmTransaction(txId, "finalized");
+  await solConnection.confirmTransaction(
+    {
+      blockhash: latestBlockHash.blockhash,
+      lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
+      signature: txId,
+    },
+    "finalized"
+  );
 };
 
 export const withdrawNft = async (
@@ -315,9 +336,19 @@ export const withdrawNft = async (
       signers: [],
     })
   );
-
+  const anyTransaction = tx;
+  const latestBlockHash = await solConnection.getLatestBlockhash();
+  anyTransaction.recentBlockhash = latestBlockHash.blockhash;
+  anyTransaction.lastValidBlockHeight = latestBlockHash.lastValidBlockHeight;
   const txId = await wallet.sendTransaction(tx, solConnection);
-  await solConnection.confirmTransaction(txId, "finalized");
+  await solConnection.confirmTransaction(
+    {
+      blockhash: latestBlockHash.blockhash,
+      lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
+      signature: txId,
+    },
+    "finalized"
+  );
   successAlert("Unstake has been successfully processed!");
 };
 
