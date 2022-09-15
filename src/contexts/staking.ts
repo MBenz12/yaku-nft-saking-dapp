@@ -118,11 +118,6 @@ export type StakingType = {
           isSigner: false;
         },
         {
-          name: "destNftTokenAccount";
-          isMut: true;
-          isSigner: false;
-        },
-        {
           name: "nftMint";
           isMut: false;
           isSigner: false;
@@ -186,11 +181,6 @@ export type StakingType = {
           isSigner: false;
         },
         {
-          name: "destNftTokenAccount";
-          isMut: true;
-          isSigner: false;
-        },
-        {
           name: "nftMint";
           isMut: false;
           isSigner: false;
@@ -204,6 +194,10 @@ export type StakingType = {
       args: [
         {
           name: "globalBump";
+          type: "u8";
+        },
+        {
+          name: "vaultStakeBump";
           type: "u8";
         }
       ];
@@ -590,11 +584,6 @@ export const IDL: StakingType = {
           isSigner: false,
         },
         {
-          name: "destNftTokenAccount",
-          isMut: true,
-          isSigner: false,
-        },
-        {
           name: "nftMint",
           isMut: false,
           isSigner: false,
@@ -658,11 +647,6 @@ export const IDL: StakingType = {
           isSigner: false,
         },
         {
-          name: "destNftTokenAccount",
-          isMut: true,
-          isSigner: false,
-        },
-        {
           name: "nftMint",
           isMut: false,
           isSigner: false,
@@ -677,6 +661,10 @@ export const IDL: StakingType = {
         {
           name: "globalBump",
           type: "u8",
+        },
+        {
+          name: "vaultStakeBump",
+          type: "u8"
         },
       ],
     },

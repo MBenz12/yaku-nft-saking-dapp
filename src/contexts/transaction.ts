@@ -159,6 +159,8 @@ export const initUserPool = async (wallet: WalletContextState) => {
       program.programId
     );
 
+    console.log(userPoolKey.toString())
+
     let ix = SystemProgram.createAccountWithSeed({
       fromPubkey: userAddress,
       basePubkey: userAddress,
@@ -225,7 +227,7 @@ export const stakeNft = async (
     program.programId
   );
 
-  let { instructions, destinationAccounts } = await getATokenAccountsNeedCreate(
+  let { instructions } = await getATokenAccountsNeedCreate(
     solConnection,
     userAddress,
     globalAuthority,
@@ -237,6 +239,7 @@ export const stakeNft = async (
     "user-pool",
     program.programId
   );
+  console.log(userPoolKey.toString())
 
   let poolAccount = await solConnection.getAccountInfo(userPoolKey);
   if (poolAccount === null || poolAccount.data === null) {
@@ -258,7 +261,6 @@ export const stakeNft = async (
           userFixedPool: userPoolKey,
           globalAuthority,
           userTokenAccount,
-          destNftTokenAccount: destinationAccounts[0],
           nftMint: mint,
           mintMetadata: metadata,
           tokenProgram: TOKEN_PROGRAM_ID,
@@ -305,7 +307,7 @@ export const withdrawNft = async (
     program.programId
   );
 
-  let { instructions, destinationAccounts } = await getATokenAccountsNeedCreate(
+  let { instructions } = await getATokenAccountsNeedCreate(
     solConnection,
     userAddress,
     globalAuthority,
@@ -321,14 +323,19 @@ export const withdrawNft = async (
 
   let tx = new Transaction();
   if (instructions.length > 0) tx.add(...instructions);
+  const [_vaultPda, vaultStakeBump] = await PublicKey.findProgramAddress([
+    Buffer.from("vault_stake"),
+    globalAuthority.toBuffer(),
+    userAddress.toBuffer(),
+    userTokenAccount.toBuffer()
+  ], program.programId);
   tx.add(
-    program.instruction.withdrawNftFromFixed(bump, {
+    program.instruction.withdrawNftFromFixed(bump, vaultStakeBump, {
       accounts: {
         owner: userAddress,
         userFixedPool: userPoolKey,
         globalAuthority,
         userTokenAccount,
-        destNftTokenAccount: destinationAccounts[0],
         nftMint: mint,
         tokenProgram: TOKEN_PROGRAM_ID,
       },
@@ -472,14 +479,19 @@ export const withdrawAllNft = async (
   if (instructions.length > 0) txnMulti.add(...instructions);
   await Promise.mapSeries(mintList, async (mint, idx) => {
     let userTokenAccount = await getAssociatedTokenAccount(userAddress, mint);
+    const [_vaultPda, vaultStakeBump] = await PublicKey.findProgramAddress([
+      Buffer.from("vault_stake"),
+      globalAuthority.toBuffer(),
+      userAddress.toBuffer(),
+      userTokenAccount.toBuffer()
+    ], program.programId);
     txnMulti.add(
-      program.instruction.withdrawNftFromFixed(bump, {
+      program.instruction.withdrawNftFromFixed(bump, vaultStakeBump, {
         accounts: {
           owner: userAddress,
           userFixedPool: userPoolKey,
           globalAuthority,
           userTokenAccount,
-          destNftTokenAccount: destinationAccounts[idx],
           nftMint: mint,
           tokenProgram: TOKEN_PROGRAM_ID,
         },
