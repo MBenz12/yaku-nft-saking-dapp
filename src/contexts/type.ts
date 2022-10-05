@@ -4,11 +4,11 @@ import { PublicKey } from "@solana/web3.js";
 export interface GlobalPool {
   admin: PublicKey;
   totalAmount: anchor.BN;
-  adventureRate: anchor.BN;
-  scientistRate: anchor.BN;
-  doctorRate: anchor.BN;
-  specialistRate: anchor.BN;
-  commanderRate: anchor.BN;
+  // adventureRate: anchor.BN;
+  // scientistRate: anchor.BN;
+  // doctorRate: anchor.BN;
+  // specialistRate: anchor.BN;
+  // commanderRate: anchor.BN;
   normalRate: anchor.BN;
 }
 
