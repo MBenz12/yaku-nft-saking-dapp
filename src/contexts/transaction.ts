@@ -12,6 +12,7 @@ import {
   REWARD_TOKEN_DECIMAL,
   REWARD_TOKEN_MINT,
   USER_POOL_SIZE,
+  GLOBAL_VAULT_NAME,
 } from "../config";
 import { solConnection } from "./utils";
 import { WalletContextState } from "@solana/wallet-adapter-react";
@@ -91,7 +92,7 @@ export const calculateAllRewards = async (wallet: WalletContextState) => {
     ) {
       reward = Math.floor(
         ((now - lastRewardTime) / EPOCH) *
-          (userPool.items[i].rate.toNumber() * 0.75)
+        (userPool.items[i].rate.toNumber() * 0.75)
       );
     } else {
       reward = Math.floor(
@@ -223,7 +224,7 @@ export const stakeNft = async (
   let userTokenAccount = await getAssociatedTokenAccount(userAddress, mint);
 
   const [globalAuthority, bump] = await PublicKey.findProgramAddress(
-    [Buffer.from(GLOBAL_AUTHORITY_SEED)],
+    [Buffer.from(GLOBAL_VAULT_NAME), Buffer.from(GLOBAL_AUTHORITY_SEED)],
     program.programId
   );
 
@@ -240,6 +241,8 @@ export const stakeNft = async (
     program.programId
   );
   console.log(userPoolKey.toString())
+  console.log(globalAuthority.toString());
+  console.log(lock_period, role, model);
 
   let poolAccount = await solConnection.getAccountInfo(userPoolKey);
   if (poolAccount === null || poolAccount.data === null) {
@@ -252,8 +255,8 @@ export const stakeNft = async (
   tx.add(
     program.instruction.stakeNftToFixed(
       bump,
-      new anchor.BN(lock_period),
-      role,
+      lock_period,
+      role || '',
       new anchor.BN(model),
       {
         accounts: {
@@ -303,7 +306,7 @@ export const withdrawNft = async (
   const program = new anchor.Program(IDL as anchor.Idl, PROGRAM_ID, provider);
   let userTokenAccount = await getAssociatedTokenAccount(userAddress, mint);
   const [globalAuthority, bump] = await PublicKey.findProgramAddress(
-    [Buffer.from(GLOBAL_AUTHORITY_SEED)],
+    [Buffer.from(GLOBAL_VAULT_NAME), Buffer.from(GLOBAL_AUTHORITY_SEED)],
     program.programId
   );
 
@@ -323,18 +326,23 @@ export const withdrawNft = async (
 
   let tx = new Transaction();
   if (instructions.length > 0) tx.add(...instructions);
-  const [_vaultPda, vaultStakeBump] = await PublicKey.findProgramAddress([
-    Buffer.from("vault_stake"),
+  const [vaultPda, vaultStakeBump] = await PublicKey.findProgramAddress([
+    Buffer.from("vault-stake"),
     globalAuthority.toBuffer(),
     userAddress.toBuffer(),
     userTokenAccount.toBuffer()
   ], program.programId);
+  console.log(vaultPda.toString());
+  console.log(userTokenAccount.toString());
+  console.log(mint.toString());
+  console.log(userAddress.toString());
   tx.add(
     program.instruction.withdrawNftFromFixed(bump, vaultStakeBump, {
       accounts: {
         owner: userAddress,
         userFixedPool: userPoolKey,
         globalAuthority,
+        vaultPda,
         userTokenAccount,
         nftMint: mint,
         tokenProgram: TOKEN_PROGRAM_ID,
@@ -378,7 +386,7 @@ export const stakeAllNft = async (
   );
   const program = new anchor.Program(IDL as anchor.Idl, PROGRAM_ID, provider);
   const [globalAuthority, bump] = await PublicKey.findProgramAddress(
-    [Buffer.from(GLOBAL_AUTHORITY_SEED)],
+    [Buffer.from(GLOBAL_VAULT_NAME), Buffer.from(GLOBAL_AUTHORITY_SEED)],
     program.programId
   );
   let userPoolKey = await PublicKey.createWithSeed(
@@ -391,15 +399,17 @@ export const stakeAllNft = async (
     await initUserPool(wallet);
   }
   console.log(nftList);
-  let { instructions, destinationAccounts } = await getATokenAccountsNeedCreate(
-    solConnection,
-    userAddress,
-    globalAuthority,
-    map(nftList, ({ mint }) => mint)
-  );
-  const txnMulti = new anchor.web3.Transaction();
-  if (instructions.length > 0) txnMulti.add(instructions[0]);
-  console.log(instructions);
+  // let { instructions, destinationAccounts } = await getATokenAccountsNeedCreate(
+  //   solConnection,
+  //   userAddress,
+  //   globalAuthority,
+  //   map(nftList, ({ mint }) => mint)
+  // );
+  let txnMulti = new anchor.web3.Transaction();
+  const txns = [];
+  let i = 0;
+  // if (instructions.length > 0) { i++; txnMulti.add(instructions[0]); }
+  // console.log(instructions);
   await Promise.mapSeries(nftList, async ({ mint, role }, idx) => {
     let userTokenAccount = await getAssociatedTokenAccount(userAddress, mint);
 
@@ -407,8 +417,8 @@ export const stakeAllNft = async (
     txnMulti.add(
       program.instruction.stakeNftToFixed(
         bump,
-        new anchor.BN(lock_period),
-        role,
+        lock_period,
+        role || '',
         new anchor.BN(model),
         {
           accounts: {
@@ -416,34 +426,38 @@ export const stakeAllNft = async (
             userFixedPool: userPoolKey,
             globalAuthority,
             userTokenAccount,
-            destNftTokenAccount: destinationAccounts[idx],
             nftMint: mint,
             mintMetadata: metadata,
             tokenProgram: TOKEN_PROGRAM_ID,
             tokenMetadataProgram: METAPLEX,
           },
-          instructions: [
-            // ...instructions,
-          ],
           signers: [],
         }
       )
     );
+    i++;
+    if (i % 7 === 0) {
+      txnMulti.feePayer = userAddress;
+      const latestBlockHash = await program.provider.connection.getLatestBlockhash('finalized')
+      txnMulti.recentBlockhash = latestBlockHash.blockhash;
+      txns.push(txnMulti);
+      txnMulti = new anchor.web3.Transaction();
+    }
   });
-  txnMulti.feePayer = userAddress;
-  const anyTransaction = txnMulti;
-  const latestBlockHash = await solConnection.getLatestBlockhash();
-  anyTransaction.recentBlockhash = latestBlockHash.blockhash;
-  anyTransaction.lastValidBlockHeight = latestBlockHash.lastValidBlockHeight;
-  const txId = await wallet.sendTransaction(txnMulti, solConnection);
-  await solConnection.confirmTransaction(
-    {
-      blockhash: latestBlockHash.blockhash,
-      lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
-      signature: txId,
-    },
-    "finalized"
-  );
+  if (i % 7) {
+    txnMulti.feePayer = userAddress;
+    const latestBlockHash = await program.provider.connection.getLatestBlockhash('finalized')
+    txnMulti.recentBlockhash = latestBlockHash.blockhash;
+    txns.push(txnMulti);
+  }
+
+  // @ts-ignore
+  const signedTxns = await wallet.signAllTransactions(txns);
+  for (const tx of signedTxns) {
+    const txSignature = await program.provider.connection.sendRawTransaction(tx.serialize());
+    await program.provider.connection.confirmTransaction(txSignature, "finalized");
+    console.log(txSignature);
+  }
 };
 
 export const withdrawAllNft = async (
@@ -460,27 +474,30 @@ export const withdrawAllNft = async (
   );
   const program = new anchor.Program(IDL as anchor.Idl, PROGRAM_ID, provider);
   const [globalAuthority, bump] = await PublicKey.findProgramAddress(
-    [Buffer.from(GLOBAL_AUTHORITY_SEED)],
+    [Buffer.from(GLOBAL_VAULT_NAME), Buffer.from(GLOBAL_AUTHORITY_SEED)],
     program.programId
   );
 
-  let { instructions, destinationAccounts } = await getATokenAccountsNeedCreate(
-    solConnection,
-    userAddress,
-    globalAuthority,
-    mintList
-  );
+  // let { instructions } = await getATokenAccountsNeedCreate(
+  //   solConnection,
+  //   userAddress,
+  //   globalAuthority,
+  //   mintList
+  // );
   let userPoolKey = await PublicKey.createWithSeed(
     userAddress,
     "user-pool",
     program.programId
   );
   let txnMulti = new Transaction();
-  if (instructions.length > 0) txnMulti.add(...instructions);
+  const txns = [];
+  let i = 0;
+  // if (instructions.length > 0) txnMulti.add(...instructions);
+
   await Promise.mapSeries(mintList, async (mint, idx) => {
     let userTokenAccount = await getAssociatedTokenAccount(userAddress, mint);
-    const [_vaultPda, vaultStakeBump] = await PublicKey.findProgramAddress([
-      Buffer.from("vault_stake"),
+    const [vaultPda, vaultStakeBump] = await PublicKey.findProgramAddress([
+      Buffer.from("vault-stake"),
       globalAuthority.toBuffer(),
       userAddress.toBuffer(),
       userTokenAccount.toBuffer()
@@ -491,6 +508,7 @@ export const withdrawAllNft = async (
           owner: userAddress,
           userFixedPool: userPoolKey,
           globalAuthority,
+          vaultPda,
           userTokenAccount,
           nftMint: mint,
           tokenProgram: TOKEN_PROGRAM_ID,
@@ -499,21 +517,29 @@ export const withdrawAllNft = async (
         signers: [],
       })
     );
+    i++;
+    if (i % 6 === 0) {
+      txnMulti.feePayer = userAddress;
+      const latestBlockHash = await program.provider.connection.getLatestBlockhash('finalized')
+      txnMulti.recentBlockhash = latestBlockHash.blockhash;
+      txns.push(txnMulti);
+      txnMulti = new anchor.web3.Transaction();
+    }
   });
-  txnMulti.feePayer = userAddress;
-  const anyTransaction = txnMulti;
-  const latestBlockHash = await solConnection.getLatestBlockhash();
-  anyTransaction.recentBlockhash = latestBlockHash.blockhash;
-  anyTransaction.lastValidBlockHeight = latestBlockHash.lastValidBlockHeight;
-  const txId = await wallet.sendTransaction(txnMulti, solConnection);
-  await solConnection.confirmTransaction(
-    {
-      blockhash: latestBlockHash.blockhash,
-      lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
-      signature: txId,
-    },
-    "finalized"
-  );
+  if (i % 6) {
+    txnMulti.feePayer = userAddress;
+    const latestBlockHash = await program.provider.connection.getLatestBlockhash('finalized')
+    txnMulti.recentBlockhash = latestBlockHash.blockhash;
+    txns.push(txnMulti);
+  }
+
+  // @ts-ignore
+  const signedTxns = await wallet.signAllTransactions(txns);
+  for (const tx of signedTxns) {
+    const txSignature = await program.provider.connection.sendRawTransaction(tx.serialize());
+    await program.provider.connection.confirmTransaction(txSignature, "finalized");
+    console.log(txSignature);
+  }
   successAlert("Unstake all has been successfully processed!");
 };
 
@@ -529,7 +555,7 @@ export const claimRewardAll = async (wallet: WalletContextState) => {
   const program = new anchor.Program(IDL as anchor.Idl, PROGRAM_ID, provider);
 
   const [globalAuthority, bump] = await PublicKey.findProgramAddress(
-    [Buffer.from(GLOBAL_AUTHORITY_SEED)],
+    [Buffer.from(GLOBAL_VAULT_NAME), Buffer.from(GLOBAL_AUTHORITY_SEED)],
     program.programId
   );
 
@@ -545,6 +571,7 @@ export const claimRewardAll = async (wallet: WalletContextState) => {
     userAddress,
     [REWARD_TOKEN_MINT]
   );
+
 
   let rewardVault = await getAssociatedTokenAccount(
     globalAuthority,
@@ -569,6 +596,10 @@ export const claimRewardAll = async (wallet: WalletContextState) => {
 
   // const txId = await wallet.sendTransaction(tx, solConnection);
   // await solConnection.confirmTransaction(txId, "finalized");
+  console.log(userPoolKey.toString());
+  console.log(globalAuthority.toString());
+  console.log(rewardVault.toString());
+  console.log(destinationAccounts[0].toString());
   const tx = await program.rpc.claimRewardAll(bump, {
     accounts: {
       owner: userAddress,
@@ -602,7 +633,7 @@ export const claimReward = async (
   );
   const program = new anchor.Program(IDL as anchor.Idl, PROGRAM_ID, provider);
   const [globalAuthority, bump] = await PublicKey.findProgramAddress(
-    [Buffer.from(GLOBAL_AUTHORITY_SEED)],
+    [Buffer.from(GLOBAL_VAULT_NAME), Buffer.from(GLOBAL_AUTHORITY_SEED)],
     program.programId
   );
 
@@ -622,6 +653,7 @@ export const claimReward = async (
     globalAuthority,
     REWARD_TOKEN_MINT
   );
+  console.log(rewardVault.toString());
   let tx = new Transaction();
   if (instructions.length > 0) tx.add(...instructions);
   tx.add(
