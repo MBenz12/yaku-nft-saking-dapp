@@ -1,30 +1,44 @@
 import { web3 } from "@project-serum/anchor";
 import { PublicKey } from "@solana/web3.js";
-export const NETWORK = "devnet";
+const { 
+  CONFIG_NETWORK, 
+  CONFIG_PROGRAM_ID ,
+  CONFIG_VAULT_NAME,
+  CONFIG_ADMIN_KEY,
+  CONFIG_REWARD_TOKEN_MINT,
+  CONFIG_REWARD_TOKEN_SYMBOL,
+  CONFIG_REWARD_TOKEN_DECIMAL,
+  CONFIG_NFT_CREATOR,
+  CONFIG_TRAIT_TYPE,
+  CONFIG_DISCORD_LINK,
+  CONFIG_TWITTER_LINK,
+} = require("../config.json");
+export const NETWORK = CONFIG_NETWORK;
 
 export const USER_POOL_SIZE = 3664;
-export const GLOBAL_VAULT_NAME = "vault2";
+export const GLOBAL_VAULT_NAME = CONFIG_VAULT_NAME;
 export const GLOBAL_AUTHORITY_SEED = "global-authority";
 export const EPOCH = 7200;
-export const REWARD_TOKEN_DECIMAL = 100;
+export const REWARD_TOKEN_DECIMAL = CONFIG_REWARD_TOKEN_DECIMAL;
 
 export const ADMIN_PUBKEY = new PublicKey(
-  "3qWq2ehELrVJrTg2JKKERm67cN6vYjm1EyhCEzfQ6jMd"
+  CONFIG_ADMIN_KEY
 ); //ignore this fucking shit
 //export const REWARD_TOKEN_MINT = new PublicKey("EfHDFK75q329Ee9xBA7xEe1XQGAWBnsrbPqjzmhDvSvQ");
 export const REWARD_TOKEN_MINT = new PublicKey(
-  "6ufHziFb4eogt51BczXurjakWx6mfWygC3DxcvdLgLGM"
+  CONFIG_REWARD_TOKEN_MINT
 );
 //export const PROGRAM_ID = "5vzxCsX1Bhqnv1Y1Gdy7gqL3LztePQ1etzBDPwf4BV5e";
-export const PROGRAM_ID = "HakYS4S2zDAH54hH9L1dAbfXLhiAS8gEJcdpJcmJ6Uqv";
-
-export const NFT_CREATOR = "HSrpxmzQQ6n8qPS7sBNpeX3WY59XYVUUpCZ1DzBPEGcF";
+export const REWARD_TOKEN_SYMBOL = CONFIG_REWARD_TOKEN_SYMBOL;
+export const PROGRAM_ID = CONFIG_PROGRAM_ID;
+export const TRAIT_TYPE = CONFIG_TRAIT_TYPE;
+export const NFT_CREATOR = CONFIG_NFT_CREATOR;
 export const METAPLEX = new web3.PublicKey(
   "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s"
 );
 
-export const TWITTER = "https://twitter.com/****";
-export const DISCORD = "https://discord.com/****";
+export const TWITTER = CONFIG_DISCORD_LINK;
+export const DISCORD = CONFIG_TWITTER_LINK;
 
 // 3 Models support
 export const ALLOWED_MODELS: Array<any> = [

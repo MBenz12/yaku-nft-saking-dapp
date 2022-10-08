@@ -1,6 +1,6 @@
 import { WalletContextState } from "@solana/wallet-adapter-react";
 import { getParsedNftAccountsByOwner } from "@nfteyez/sol-rayz";
-import { NFT_CREATOR } from "../config";
+import { NFT_CREATOR, TRAIT_TYPE } from "../config";
 import { getNftMetaData, solConnection } from "../contexts/utils";
 import { Dispatch, SetStateAction } from "react";
 import { each, Promise } from "bluebird";
@@ -36,7 +36,7 @@ export const getUnstakedNFTs = async (props: {
           mintAddress: get(item, "mint"),
           role: get(
             get(json, "attributes", {}).find(
-              (o: any) => o.trait_type === "Role"
+              (o: any) => o.trait_type === TRAIT_TYPE
             ),
             "value"
           ),

@@ -1,7 +1,7 @@
 import { LAMPORTS_PER_SOL } from "@solana/web3.js";
 import { find } from "lodash";
 import moment from "moment";
-import { ALLOWED_MODELS } from "../config";
+import { ALLOWED_MODELS, REWARD_TOKEN_SYMBOL } from "../config";
 
 export const nftCard = ({ image, name, attributes }: any, { handleStake }: any) => ({
   type: "card",
@@ -74,7 +74,7 @@ export const stakedNftCard = (
         my: 1,
       },
       label: ({ t }: any) =>
-        `$${t('TOKEN.NAME')} ${rate / LAMPORTS_PER_SOL}/${t("RATES.PER_DAY")}`,
+        `$${REWARD_TOKEN_SYMBOL} ${rate / LAMPORTS_PER_SOL}/${t("RATES.PER_DAY")}`,
     },
     {
       type: "chip",

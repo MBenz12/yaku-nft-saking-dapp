@@ -18,7 +18,7 @@ import { TemplateItem } from "../components/TemplateItem";
 import { fields } from "../configs/dashboard";
 import { map, sortBy } from "lodash";
 import { PublicKey } from "@solana/web3.js";
-import { DEFAULT_LOCKDAY, DEFAULT_MODEL } from "../config";
+import { DEFAULT_LOCKDAY, DEFAULT_MODEL, REWARD_TOKEN_SYMBOL } from "../config";
 import { useToasts } from "../hooks/useToasts";
 
 export default function HomePage(props: {
@@ -58,7 +58,7 @@ export default function HomePage(props: {
       startLoading();
       await claimRewardAll(wallet);
       updatePage();
-      showInfoToast(`You have claimed all of your $${t("TOKEN.NAME")}.`);
+      showInfoToast(`You have claimed all of your $${REWARD_TOKEN_SYMBOL}.`);
     } catch (error) {
       showErrorToast(
         "An error has occured while claiming your rewards, please try again."

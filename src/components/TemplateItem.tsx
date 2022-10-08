@@ -340,6 +340,7 @@ const renderComponent = ({ items, pipe }: any, { item, index }: any) => {
     },
     menuItem: () => {
       const { ...menuItemProps } = otherProps;
+      console.log(key);
       return (
         <MenuItem key={key} {...menuItemProps}>
           <TemplateItem key={`${key}#item`} items={subItems} pipe={pipe}></TemplateItem>

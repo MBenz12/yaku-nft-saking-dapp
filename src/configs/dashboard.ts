@@ -1,3 +1,4 @@
+import { REWARD_TOKEN_SYMBOL } from '../config';
 export const fields = [
   {
     label: "RATES.ADVENTURE",
@@ -127,7 +128,7 @@ export const dashboard = {
             borderRadius: 5000,
             textTransform: "none",
           },
-          label: ({ t, rewardAmount}: any) => `${t("ACTIONS.CLAIM_ALL")} (${rewardAmount.toLocaleString()} ${t("TOKEN.NAME")})`
+          label: ({ t, rewardAmount}: any) => `${t("ACTIONS.CLAIM_ALL")} (${rewardAmount.toLocaleString()} ${REWARD_TOKEN_SYMBOL})`
         }]
       }]
     }
