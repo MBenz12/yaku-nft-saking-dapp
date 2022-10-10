@@ -1,28 +1,8 @@
 import { REWARD_TOKEN_SYMBOL } from '../config';
 export const fields = [
   {
-    label: "RATES.ADVENTURE",
-    key: "adventureRate",
-  },
-  {
-    label: "RATES.COMMANDER",
-    key: "commanderRate",
-  },
-  {
-    label: "RATES.DOCTOR",
-    key: "doctorRate",
-  },
-  {
     label: "RATES.NORMAL",
     key: "normalRate",
-  },
-  {
-    label: "RATES.SCIENTIST",
-    key: "scientistRate",
-  },
-  {
-    label: "RATES.SPECIALIST",
-    key: "specialistRate",
   },
   {
     label: "RATES.TOTAL_AMOUNT",

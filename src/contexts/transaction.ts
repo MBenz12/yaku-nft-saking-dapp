@@ -684,7 +684,7 @@ export const getGlobalState = async (): Promise<GlobalPool | null> => {
   );
   const program = new anchor.Program(IDL as anchor.Idl, PROGRAM_ID, provider);
   const [globalAuthority, bump] = await PublicKey.findProgramAddress(
-    [Buffer.from(GLOBAL_AUTHORITY_SEED)],
+    [Buffer.from(GLOBAL_VAULT_NAME), Buffer.from(GLOBAL_AUTHORITY_SEED)],
     program.programId
   );
   try {
