@@ -24,11 +24,11 @@ export const REWARD_TOKEN_DECIMAL = CONFIG_REWARD_TOKEN_DECIMAL;
 export const ADMIN_PUBKEY = new PublicKey(
   CONFIG_ADMIN_KEY
 ); //ignore this fucking shit
-//export const REWARD_TOKEN_MINT = new PublicKey("EfHDFK75q329Ee9xBA7xEe1XQGAWBnsrbPqjzmhDvSvQ");
+
 export const REWARD_TOKEN_MINT = new PublicKey(
   CONFIG_REWARD_TOKEN_MINT
 );
-//export const PROGRAM_ID = "5vzxCsX1Bhqnv1Y1Gdy7gqL3LztePQ1etzBDPwf4BV5e";
+
 export const REWARD_TOKEN_SYMBOL = CONFIG_REWARD_TOKEN_SYMBOL;
 export const PROGRAM_ID = CONFIG_PROGRAM_ID;
 export const TRAIT_TYPE = CONFIG_TRAIT_TYPE;
@@ -40,31 +40,15 @@ export const METAPLEX = new web3.PublicKey(
 export const TWITTER = CONFIG_DISCORD_LINK;
 export const DISCORD = CONFIG_TWITTER_LINK;
 
-// 3 Models support
+// Model 2 support
 export const ALLOWED_MODELS: Array<any> = [
-  {
-    value: "1",
-    label: "MODELS.1.LABEL",
-    description: "MODELS.1.DESC",
-  },
   {
     value: "2",
     label: "MODELS.2.LABEL",
     description: "MODELS.2.DESC",
   },
-  {
-    value: "3",
-    label: "MODELS.3.LABEL",
-    description: "MODELS.3.DESC",
-  },
 ];
 
-// 1 Model support
-// export const ALLOWED_MODELS: Array<any> = [{
-//   value: '1',
-//   label: 'MODELS.1.LABEL',
-//   description: 'MODELS.1.DESC'
-// }];
 export const MODEL_CAN_SELECT_LOCKDAYS = "3";
 export const ALLOWED_LOCKDAYS: Array<any> = [
   {
