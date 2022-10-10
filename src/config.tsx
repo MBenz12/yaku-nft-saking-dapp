@@ -64,7 +64,7 @@ export const ALLOWED_LOCKDAYS: Array<any> = [
     label: "LOCKDAYS.30DAYS",
   },
 ];
-export const DEFAULT_MODEL = "1";
+export const DEFAULT_MODEL = "2";
 export const DEFAULT_LOCKDAY = "7";
 export const DEFAULT_PERIOD = 1;
 export const MODEL_PERIOD_MAPPING: any = {

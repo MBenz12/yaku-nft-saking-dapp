@@ -2,8 +2,9 @@ import { PublicKey } from "@solana/web3.js";
 import { web3 } from "@project-serum/anchor";
 import { programs } from "@metaplex/js";
 import { NETWORK } from "../config";
+const endpoint =  "https://solana-api.projectserum.com";
 
-export const solConnection = new web3.Connection(web3.clusterApiUrl(NETWORK));
+export const solConnection = new web3.Connection(endpoint);
 
 export const getNftMetaData = async (nftMintPk: PublicKey) => {
   let {
