@@ -228,12 +228,12 @@ export const stakeNft = async (
     program.programId
   );
 
-  let { instructions } = await getATokenAccountsNeedCreate(
-    solConnection,
-    userAddress,
-    globalAuthority,
-    [mint]
-  );
+  // let { instructions } = await getATokenAccountsNeedCreate(
+  //   solConnection,
+  //   userAddress,
+  //   globalAuthority,
+  //   [mint]
+  // );
 
   let userPoolKey = await PublicKey.createWithSeed(
     userAddress,
@@ -251,7 +251,7 @@ export const stakeNft = async (
   const metadata = await getMetadata(mint);
 
   let tx = new Transaction();
-  if (instructions.length > 0) tx.add(instructions[0]);
+  // if (instructions.length > 0) tx.add(instructions[0]);
   tx.add(
     program.instruction.stakeNftToFixed(
       bump,
@@ -310,14 +310,14 @@ export const withdrawNft = async (
     program.programId
   );
 
-  let { instructions } = await getATokenAccountsNeedCreate(
-    solConnection,
-    userAddress,
-    globalAuthority,
-    [mint]
-  );
+  // let { instructions } = await getATokenAccountsNeedCreate(
+  //   solConnection,
+  //   userAddress,
+  //   globalAuthority,
+  //   [mint]
+  // );
 
-  console.log(instructions, "instructions..");
+  // console.log(instructions, "instructions..");
   let userPoolKey = await PublicKey.createWithSeed(
     userAddress,
     "user-pool",
@@ -325,7 +325,7 @@ export const withdrawNft = async (
   );
 
   let tx = new Transaction();
-  if (instructions.length > 0) tx.add(...instructions);
+  // if (instructions.length > 0) tx.add(...instructions);
   const [vaultPda, vaultStakeBump] = await PublicKey.findProgramAddress([
     Buffer.from("vault-stake"),
     globalAuthority.toBuffer(),
@@ -565,7 +565,7 @@ export const claimRewardAll = async (wallet: WalletContextState) => {
     program.programId
   );
 
-  let { instructions, destinationAccounts } = await getATokenAccountsNeedCreate(
+  let { destinationAccounts } = await getATokenAccountsNeedCreate(
     solConnection,
     userAddress,
     userAddress,
@@ -609,7 +609,7 @@ export const claimRewardAll = async (wallet: WalletContextState) => {
       userRewardAccount: destinationAccounts[0],
       tokenProgram: TOKEN_PROGRAM_ID,
     },
-    instructions: [...instructions],
+    instructions: [],
     signers: [],
   });
 
@@ -643,7 +643,7 @@ export const claimReward = async (
     program.programId
   );
 
-  let { instructions, destinationAccounts } = await getATokenAccountsNeedCreate(
+  let { destinationAccounts } = await getATokenAccountsNeedCreate(
     solConnection,
     userAddress,
     userAddress,
@@ -655,7 +655,7 @@ export const claimReward = async (
   );
   console.log(rewardVault.toString());
   let tx = new Transaction();
-  if (instructions.length > 0) tx.add(...instructions);
+  // if (instructions.length > 0) tx.add(...instructions);
   tx.add(
     program.instruction.claimReward(bump, {
       accounts: {
