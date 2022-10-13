@@ -565,56 +565,55 @@ export const claimRewardAll = async (wallet: WalletContextState) => {
     program.programId
   );
 
-  let { destinationAccounts } = await getATokenAccountsNeedCreate(
+  let { destinationAccounts, instructions } = await getATokenAccountsNeedCreate(
     solConnection,
     userAddress,
     userAddress,
     [REWARD_TOKEN_MINT]
   );
 
-
   let rewardVault = await getAssociatedTokenAccount(
     globalAuthority,
     REWARD_TOKEN_MINT
   );
-  // let tx = new Transaction();
-  // if (instructions.length !== 0) tx.add(...instructions);
-  // tx.add(program.instruction.claimRewardAll(
-  //     bump, {
-  //     accounts: {
-  //         owner: userAddress,
-  //         userFixedPool: userPoolKey,
-  //         globalAuthority,
-  //         rewardVault,
-  //         userRewardAccount: destinationAccounts[0],
-  //         tokenProgram: TOKEN_PROGRAM_ID,
-  //     },
-  //     instructions: [],
-  //     signers: []
-  // }
-  // ))
+  let tx = new Transaction();
+  if (instructions.length !== 0) tx.add(...instructions);
+  tx.add(
+    program.instruction.claimRewardAll(bump, {
+      accounts: {
+        owner: userAddress,
+        userFixedPool: userPoolKey,
+        globalAuthority,
+        rewardVault,
+        userRewardAccount: destinationAccounts[0],
+        tokenProgram: TOKEN_PROGRAM_ID,
+      },
+      instructions: [],
+      signers: [],
+    })
+  );
 
-  // const txId = await wallet.sendTransaction(tx, solConnection);
-  // await solConnection.confirmTransaction(txId, "finalized");
+  const txId = await wallet.sendTransaction(tx, solConnection);
+  await solConnection.confirmTransaction(txId, "finalized");
   console.log(userPoolKey.toString());
   console.log(globalAuthority.toString());
   console.log(rewardVault.toString());
   console.log(destinationAccounts[0].toString());
-  const tx = await program.rpc.claimRewardAll(bump, {
-    accounts: {
-      owner: userAddress,
-      userFixedPool: userPoolKey,
-      globalAuthority,
-      rewardVault,
-      userRewardAccount: destinationAccounts[0],
-      tokenProgram: TOKEN_PROGRAM_ID,
-    },
-    instructions: [],
-    signers: [],
-  });
+  // const tx = await program.rpc.claimRewardAll(bump, {
+  //   accounts: {
+  //     owner: userAddress,
+  //     userFixedPool: userPoolKey,
+  //     globalAuthority,
+  //     rewardVault,
+  //     userRewardAccount: destinationAccounts[0],
+  //     tokenProgram: TOKEN_PROGRAM_ID,
+  //   },
+  //   instructions: [],
+  //   signers: [],
+  // });
 
-  console.log("Your transaction signature", tx);
-  await solConnection.confirmTransaction(tx, "singleGossip");
+  // console.log("Your transaction signature", tx);
+  // await solConnection.confirmTransaction(tx, "singleGossip");
 
   successAlert("Claim has been successfully processed!");
 };
@@ -643,7 +642,7 @@ export const claimReward = async (
     program.programId
   );
 
-  let { destinationAccounts } = await getATokenAccountsNeedCreate(
+  let { instructions, destinationAccounts } = await getATokenAccountsNeedCreate(
     solConnection,
     userAddress,
     userAddress,
@@ -655,7 +654,7 @@ export const claimReward = async (
   );
   console.log(rewardVault.toString());
   let tx = new Transaction();
-  // if (instructions.length > 0) tx.add(...instructions);
+  if (instructions.length > 0) tx.add(...instructions);
   tx.add(
     program.instruction.claimReward(bump, {
       accounts: {
