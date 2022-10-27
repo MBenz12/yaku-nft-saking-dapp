@@ -1,26 +1,22 @@
 import * as anchor from "@project-serum/anchor";
-import { PublicKey, SystemProgram, Transaction } from "@solana/web3.js";
 import {
-  TOKEN_PROGRAM_ID,
-  ASSOCIATED_TOKEN_PROGRAM_ID,
+  ASSOCIATED_TOKEN_PROGRAM_ID, TOKEN_PROGRAM_ID
 } from "@solana/spl-token";
+import { WalletContextState } from "@solana/wallet-adapter-react";
+import { PublicKey, SystemProgram, Transaction } from "@solana/web3.js";
+import { Promise } from "bluebird";
 import {
   EPOCH,
-  GLOBAL_AUTHORITY_SEED,
-  METAPLEX,
+  GLOBAL_AUTHORITY_SEED, GLOBAL_VAULT_NAME, METAPLEX,
   PROGRAM_ID,
   REWARD_TOKEN_DECIMAL,
   REWARD_TOKEN_MINT,
-  USER_POOL_SIZE,
-  GLOBAL_VAULT_NAME,
+  USER_POOL_SIZE
 } from "../config";
-import { solConnection } from "./utils";
-import { WalletContextState } from "@solana/wallet-adapter-react";
+import { successAlert } from "../services/toastGroup";
 import { IDL } from "./staking";
 import { GlobalPool, UserPool } from "./type";
-import { successAlert } from "../services/toastGroup";
-import { Promise } from "bluebird";
-import { map } from "lodash";
+import { solConnection } from "./utils";
 
 export const setAmount = async (
   wallet: WalletContextState,
@@ -244,11 +240,28 @@ export const stakeNft = async (
   console.log(globalAuthority.toString());
   console.log(lock_period, role, model);
 
+  const [vaultPda, vaultStakeBump] = await PublicKey.findProgramAddress([
+    Buffer.from("vault-stake"),
+    globalAuthority.toBuffer(),
+    userAddress.toBuffer(),
+    userTokenAccount.toBuffer()
+  ], program.programId);
+
   let poolAccount = await solConnection.getAccountInfo(userPoolKey);
   if (poolAccount === null || poolAccount.data === null) {
     await initUserPool(wallet);
   }
   const metadata = await getMetadata(mint);
+  const METADATA_PROGRAM_ID = new PublicKey("metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s");
+  const [edition] = await PublicKey.findProgramAddress(
+    [
+      Buffer.from("metadata"),
+      METADATA_PROGRAM_ID.toBuffer(),
+      mint.toBuffer(),
+      Buffer.from("edition"),
+    ],
+    METADATA_PROGRAM_ID
+  );
 
   let tx = new Transaction();
   // if (instructions.length > 0) tx.add(instructions[0]);
@@ -265,6 +278,8 @@ export const stakeNft = async (
           globalAuthority,
           userTokenAccount,
           nftMint: mint,
+          vaultPda,
+          edition,
           mintMetadata: metadata,
           tokenProgram: TOKEN_PROGRAM_ID,
           tokenMetadataProgram: METAPLEX,
@@ -336,6 +351,18 @@ export const withdrawNft = async (
   console.log(userTokenAccount.toString());
   console.log(mint.toString());
   console.log(userAddress.toString());
+
+  const METADATA_PROGRAM_ID = new PublicKey("metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s");
+  const [edition] = await PublicKey.findProgramAddress(
+    [
+      Buffer.from("metadata"),
+      METADATA_PROGRAM_ID.toBuffer(),
+      mint.toBuffer(),
+      Buffer.from("edition"),
+    ],
+    METADATA_PROGRAM_ID
+  );
+
   tx.add(
     program.instruction.withdrawNftFromFixed(bump, vaultStakeBump, {
       accounts: {
@@ -343,9 +370,11 @@ export const withdrawNft = async (
         userFixedPool: userPoolKey,
         globalAuthority,
         vaultPda,
+        edition,
         userTokenAccount,
         nftMint: mint,
         tokenProgram: TOKEN_PROGRAM_ID,
+        tokenMetadataProgram: METAPLEX,
       },
       instructions: [],
       signers: [],
