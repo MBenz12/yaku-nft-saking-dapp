@@ -51,17 +51,23 @@ export default function HomePage(props: {
   const [userStakedCount, setUserStakedCount] = useState(0);
 
   const [rewardAmount, setRewardAmount] = useState(0);
-  const { showInfoToast, showErrorToast } = useToasts();
+  const { showSuccessToast, showInfoToast, showErrorToast } = useToasts();
 
   const handleClaimAll = async () => {
     try {
       startLoading();
+      showInfoToast(
+        "Transaction may delay due to Solana congestion. Please wait for a moment."
+      );
       await claimRewardAll(wallet);
       updatePage();
-      showInfoToast(`You have claimed all of your $${REWARD_TOKEN_SYMBOL}.`);
+      showSuccessToast(`You have claimed all of your $${REWARD_TOKEN_SYMBOL}.`);
     } catch (error) {
+      showInfoToast(
+        "Transaction may delay due to Solana congestion. Please try refresh and check your wallet."
+      );
       showErrorToast(
-        "An error has occured while claiming your rewards, please try again."
+        "An error has occured while staking your nft, please check your wallet and may be try again later."
       );
       console.error(error);
     } finally {
@@ -74,19 +80,25 @@ export default function HomePage(props: {
     try {
       startLoading();
 
+      showInfoToast(
+        "Transaction may delay due to Solana congestion. Please wait for a moment."
+      );
       await stakeAllNft(
         wallet,
-        map(nftList, (nft) => ({
+        map(nftList, (nft: any) => ({
           mint: new PublicKey(nft.mintAddress),
           role: nft.role,
         })),
         +DEFAULT_LOCKDAY,
         +DEFAULT_MODEL
       );
-      showInfoToast("You have staked all of your NFTs.");
+      showSuccessToast("You have staked all of your NFTs.");
     } catch (error) {
+      showInfoToast(
+        "Transaction may delay due to Solana congestion. Please try refresh and check your wallet."
+      );
       showErrorToast(
-        "An error has occured while staking your nfts, please try again."
+        "An error has occured while staking your nft, please check your wallet and may be try again later."
       );
       console.error(error);
     } finally {
@@ -99,14 +111,20 @@ export default function HomePage(props: {
     if (!stakedNfts || !stakedNfts.length) return;
     try {
       startLoading();
+      showInfoToast(
+        "Transaction may delay due to Solana congestion. Please wait for a moment."
+      );
       await withdrawAllNft(
         wallet,
-        map(stakedNfts, (nft) => new PublicKey(nft.nftAddress))
+        map(stakedNfts, (nft: any) => new PublicKey(nft.nftAddress))
       );
-      showInfoToast("You have unstaked all of your NFTs.");
+      showSuccessToast("You have unstaked all of your NFTs.");
     } catch (error) {
+      showInfoToast(
+        "Transaction may delay due to Solana congestion. Please try refresh and check your wallet."
+      );
       showErrorToast(
-        "An error has occured while unstaking your nfts, please try again."
+        "An error has occured while staking your nft, please check your wallet and may be try again later."
       );
       console.error(error);
     } finally {

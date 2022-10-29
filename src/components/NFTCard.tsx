@@ -60,6 +60,9 @@ export default function NFTCard(props: {
     onClose();
     try {
       startLoading();
+      showInfoToast(
+        "Transaction may delay due to Solana congestion. Please wait for a moment."
+      );
       await stakeNft(
         wallet,
         new PublicKey(mint),
@@ -68,9 +71,14 @@ export default function NFTCard(props: {
         parseInt(model)
       );
       updatePage();
-      showInfoToast('You have successfully staked your NFT.');
+      showInfoToast("You have successfully staked your NFT.");
     } catch (error) {
-      showErrorToast('An error has occured while staking your nft, please try again.');
+      showInfoToast(
+        "Transaction may delay due to Solana congestion. Please try refresh and check your wallet."
+      );
+      showErrorToast(
+        "An error has occured while staking your nft, please check your wallet and may be try again later."
+      );
       console.log(error);
     } finally {
       closeLoading();
@@ -81,16 +89,11 @@ export default function NFTCard(props: {
       const json: any = await getNFTdetail(props);
       setDataModel({ ...json, mint, role });
       const template = nftCard;
-      setItems([
-        template(
-          { ...props, ...json },
-          { handleStake }
-        ),
-      ]);
+      setItems([template({ ...props, ...json }, { handleStake })]);
     } catch (error) {
-      console.error(error)
+      console.error(error);
     }
-  }
+  };
 
   useEffect(() => {
     updateCard();

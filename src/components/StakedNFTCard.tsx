@@ -26,7 +26,7 @@ export default function StakedNFTCard(props: {
   const [items, setItems] = useState<any>([{}]);
   const [expanded, setExpanded] = useState(false);
   const wallet = useWallet();
-  const { showInfoToast } = useToasts();
+  const { showInfoToast, showErrorToast } = useToasts();
 
   const handleExpandClick = () => {
     setExpanded(!expanded);
@@ -35,14 +35,20 @@ export default function StakedNFTCard(props: {
   const handleUnstake = async () => {
     try {
       startLoading();
-      await withdrawNft(
-        wallet,
-        new PublicKey(props.mint)
+      showInfoToast(
+        "Transaction may delay due to Solana congestion. Please wait for a moment."
       );
+      await withdrawNft(wallet, new PublicKey(props.mint));
       updatePage();
-      showInfoToast('You have successfully unstaked your NFT.');
+      showInfoToast("You have successfully unstaked your NFT.");
     } catch (error) {
       console.error(error);
+      showInfoToast(
+        "Transaction may delay due to Solana congestion. Please try refresh and check your wallet."
+      );
+      showErrorToast(
+        "An error has occured while staking your nft, please check your wallet and may be try again later."
+      );
     } finally {
       closeLoading();
     }
@@ -52,12 +58,9 @@ export default function StakedNFTCard(props: {
     if (wallet.publicKey === null) return;
     try {
       startLoading();
-      await claimReward(
-        wallet,
-        new PublicKey(props.mint),
-      );
+      await claimReward(wallet, new PublicKey(props.mint));
       updatePage();
-      showInfoToast('You have successfully claimed your NFTs reward.');
+      showInfoToast("You have successfully claimed your NFTs reward.");
     } catch (error) {
       console.log(error);
     } finally {
@@ -70,15 +73,12 @@ export default function StakedNFTCard(props: {
       const json: any = await getNFTdetail(props);
       const template = stakedNftCard;
       setItems([
-        template(
-          { ...props, ...json },
-          { handleUnstake, handleClaim }
-        ),
+        template({ ...props, ...json }, { handleUnstake, handleClaim }),
       ]);
     } catch (error) {
       console.error(error);
     }
-  }
+  };
 
   useEffect(() => {
     updateCard();

@@ -2,3 +2,36 @@
 @import "./variant";
 @import "./base";
 @import "./typograph";
+
+.Toastify__toast--default {
+  background: var(--toastify-color-light);
+  color: var(--toastify-text-color-light);
+}
+
+.Toastify__toast--info {
+  color: var(--toastify-text-color-info);
+  background: var(--toastify-color-info);
+  --toastify-icon-color-info: var(--toastify-text-color-info);
+  --toastify-color-progress-info: var(--toastify-text-color-info);
+}
+
+.Toastify__toast--success {
+  color: var(--toastify-text-color-success);
+  background: var(--toastify-color-success);
+  --toastify-icon-color-success: var(--toastify-text-color-success);
+  --toastify-color-progress-success: var(--toastify-text-color-success);
+}
+
+.Toastify__toast--warning {
+  color: var(--toastify-text-color-warning);
+  background: var(--toastify-color-warning);
+  --toastify-icon-color-warning: var(--toastify-text-color-warning);
+  --toastify-color-progress-warning: var(--toastify-text-color-warning);
+}
+
+.Toastify__toast--error {
+  color: var(--toastify-text-color-error);
+  background: var(--toastify-color-error);
+  --toastify-icon-color-error: var(--toastify-text-color-error);
+  --toastify-color-progress-error: var(--toastify-text-color-error);
+}

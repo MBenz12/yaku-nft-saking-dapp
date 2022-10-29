@@ -1,17 +1,15 @@
-import { WalletContextState } from "@solana/wallet-adapter-react";
 import { getParsedNftAccountsByOwner } from "@nfteyez/sol-rayz";
-import { NFT_CREATOR, TRAIT_TYPE } from "../config";
-import { getNftMetaData, solConnection } from "../contexts/utils";
-import { Dispatch, SetStateAction } from "react";
+import { WalletContextState } from "@solana/wallet-adapter-react";
+import { LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
 import { each, Promise } from "bluebird";
-import { get, set, isFunction, cloneDeep } from "lodash";
+import { get, set } from "lodash";
+import { NFT_CREATOR, TRAIT_TYPE } from "../config";
 import {
   calculateAllRewards,
   getGlobalState,
-  getUserPoolState,
+  getUserPoolState
 } from "../contexts/transaction";
-import { LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
-import { nftCard, stakedNftCard } from "../configs/nftCard";
+import { getNftMetaData, solConnection } from "../contexts/utils";
 
 export const getUnstakedNFTs = async (props: {
   wallet: WalletContextState;
@@ -21,6 +19,7 @@ export const getUnstakedNFTs = async (props: {
   if (!wallet || wallet.publicKey === null) {
     return list;
   }
+  console.log(solConnection, wallet.publicKey.toString());
   const nftsList = await getParsedNftAccountsByOwner({
     publicAddress: wallet.publicKey.toBase58(),
     connection: solConnection,
