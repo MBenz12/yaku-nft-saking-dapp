@@ -156,7 +156,7 @@ export const initUserPool = async (wallet: WalletContextState) => {
   try {
     let userPoolKey = await PublicKey.createWithSeed(
       userAddress,
-      "user-pool",
+      GLOBAL_VAULT_NAME + "-user-pool",
       program.programId
     );
 
@@ -165,7 +165,7 @@ export const initUserPool = async (wallet: WalletContextState) => {
     let ix = SystemProgram.createAccountWithSeed({
       fromPubkey: userAddress,
       basePubkey: userAddress,
-      seed: "user-pool",
+      seed: GLOBAL_VAULT_NAME + "-user-pool",
       newAccountPubkey: userPoolKey,
       lamports: await solConnection.getMinimumBalanceForRentExemption(
         USER_POOL_SIZE
@@ -237,7 +237,7 @@ export const stakeNft = async (
 
   let userPoolKey = await PublicKey.createWithSeed(
     userAddress,
-    "user-pool",
+    GLOBAL_VAULT_NAME + "-user-pool",
     program.programId
   );
   console.log(userPoolKey.toString())
@@ -320,7 +320,7 @@ export const withdrawNft = async (
   // console.log(instructions, "instructions..");
   let userPoolKey = await PublicKey.createWithSeed(
     userAddress,
-    "user-pool",
+    GLOBAL_VAULT_NAME + "-user-pool",
     program.programId
   );
 
@@ -391,7 +391,7 @@ export const stakeAllNft = async (
   );
   let userPoolKey = await PublicKey.createWithSeed(
     userAddress,
-    "user-pool",
+    GLOBAL_VAULT_NAME + "-user-pool",
     program.programId
   );
   let poolAccount = await solConnection.getAccountInfo(userPoolKey);
@@ -486,7 +486,7 @@ export const withdrawAllNft = async (
   // );
   let userPoolKey = await PublicKey.createWithSeed(
     userAddress,
-    "user-pool",
+    GLOBAL_VAULT_NAME + "-user-pool",
     program.programId
   );
   let txnMulti = new Transaction();
@@ -561,7 +561,7 @@ export const claimRewardAll = async (wallet: WalletContextState) => {
 
   let userPoolKey = await PublicKey.createWithSeed(
     userAddress,
-    "user-pool",
+    GLOBAL_VAULT_NAME + "-user-pool",
     program.programId
   );
 
@@ -639,7 +639,7 @@ export const claimReward = async (
 
   let userPoolKey = await PublicKey.createWithSeed(
     userAddress,
-    "user-pool",
+    GLOBAL_VAULT_NAME + "-user-pool",
     program.programId
   );
 
@@ -707,10 +707,10 @@ export const getUserPoolState = async (
     anchor.Provider.defaultOptions()
   );
   const program = new anchor.Program(IDL as anchor.Idl, PROGRAM_ID, provider);
-
+  
   let userPoolKey = await PublicKey.createWithSeed(
     userAddress,
-    "user-pool",
+    GLOBAL_VAULT_NAME + "-user-pool",
     program.programId
   );
   try {
