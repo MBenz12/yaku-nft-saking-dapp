@@ -15,7 +15,7 @@ const {
 } = require("../config.json");
 export const NETWORK = CONFIG_NETWORK;
 
-export const USER_POOL_SIZE = 3664;
+export const USER_POOL_SIZE = 12064;
 export const GLOBAL_VAULT_NAME = CONFIG_VAULT_NAME;
 export const GLOBAL_AUTHORITY_SEED = "global-authority";
 export const EPOCH = 86400;

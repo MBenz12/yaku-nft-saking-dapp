@@ -16,9 +16,11 @@ export const getUnstakedNFTs = async (props: {
 }) => {
   const list: Array<any> = [];
   const { wallet } = props;
-  if (!wallet || wallet.publicKey === null) {
+  if (!wallet || !wallet.publicKey) {
     return list;
   }
+  // @ts-ignore
+  const { staked } = await getUserPoolData({ wallet });
   console.log(solConnection, wallet.publicKey.toString());
   const nftsList = await getParsedNftAccountsByOwner({
     publicAddress: wallet.publicKey.toBase58(),
@@ -27,19 +29,22 @@ export const getUnstakedNFTs = async (props: {
   await Promise.mapSeries(nftsList, async (item) => {
     if (get(item, "data.creators[0].address") === NFT_CREATOR) {
       try {
-        const uri = get(item, "data.uri");
-        const resp = await fetch(uri);
-        const json: any = await resp.json();
-        list.push({
-          ...json,
-          mintAddress: get(item, "mint"),
-          role: get(
-            get(json, "attributes", {}).find(
-              (o: any) => o.trait_type === TRAIT_TYPE
+        console.log(staked)
+        if (!staked?.map(stakeItem => stakeItem.nftAddress).includes(get(item, "mint"))) {
+          const uri = get(item, "data.uri");
+          const resp = await fetch(uri);
+          const json: any = await resp.json();
+          list.push({
+            ...json,
+            mintAddress: get(item, "mint"),
+            role: get(
+              get(json, "attributes", {}).find(
+                (o: any) => o.trait_type === TRAIT_TYPE
+              ),
+              "value"
             ),
-            "value"
-          ),
-        });
+          });
+        }
       } catch (error) {
         throw error;
       }

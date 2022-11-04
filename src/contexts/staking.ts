@@ -68,6 +68,10 @@ export type NftStaking = {
           "type": {
             "vec": "u64"
           }
+        },
+        {
+          "name": "custodial",
+          "type": "bool"
         }
       ]
     },
@@ -148,6 +152,10 @@ export type NftStaking = {
           "type": {
             "vec": "u64"
           }
+        },
+        {
+          "name": "custodial",
+          "type": "bool"
         }
       ]
     },
@@ -386,6 +394,46 @@ export type NftStaking = {
           "type": "u8"
         }
       ]
+    },
+    {
+      "name": "withdrawReward",
+      "accounts": [
+        {
+          "name": "claimer",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "globalAuthority",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "rewardVault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "claimerRewardAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "globalBump",
+          "type": "u8"
+        },
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
     }
   ],
   "accounts": [
@@ -439,6 +487,10 @@ export type NftStaking = {
             "type": {
               "vec": "u64"
             }
+          },
+          {
+            "name": "custodial",
+            "type": "bool"
           }
         ]
       }
@@ -463,7 +515,7 @@ export type NftStaking = {
                 {
                   "defined": "StakedNFT"
                 },
-                50
+                150
               ]
             }
           },
@@ -647,6 +699,10 @@ export const IDL: NftStaking = {
           "type": {
             "vec": "u64"
           }
+        },
+        {
+          "name": "custodial",
+          "type": "bool"
         }
       ]
     },
@@ -727,6 +783,10 @@ export const IDL: NftStaking = {
           "type": {
             "vec": "u64"
           }
+        },
+        {
+          "name": "custodial",
+          "type": "bool"
         }
       ]
     },
@@ -965,6 +1025,46 @@ export const IDL: NftStaking = {
           "type": "u8"
         }
       ]
+    },
+    {
+      "name": "withdrawReward",
+      "accounts": [
+        {
+          "name": "claimer",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "globalAuthority",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "rewardVault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "claimerRewardAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "globalBump",
+          "type": "u8"
+        },
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
     }
   ],
   "accounts": [
@@ -1018,6 +1118,10 @@ export const IDL: NftStaking = {
             "type": {
               "vec": "u64"
             }
+          },
+          {
+            "name": "custodial",
+            "type": "bool"
           }
         ]
       }
@@ -1042,7 +1146,7 @@ export const IDL: NftStaking = {
                 {
                   "defined": "StakedNFT"
                 },
-                50
+                150
               ]
             }
           },

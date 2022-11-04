@@ -1,7 +1,7 @@
 {
     "CONFIG_NETWORK": "devnet",
-    "CONFIG_PROGRAM_ID": "D7JPrs29PJiRiPrRmgS3vDsmKT5CdQxn9mWoh65DVUUN",
-    "CONFIG_VAULT_NAME": "cardinal",
+    "CONFIG_PROGRAM_ID": "Gfoam73aJ33wjPk4cLBnE6JQZ62twXjuoQokqp7imBMr",
+    "CONFIG_VAULT_NAME": "custodial-2",
     "CONFIG_ADMIN_KEY": "3qWq2ehELrVJrTg2JKKERm67cN6vYjm1EyhCEzfQ6jMd",
     "CONFIG_REWARD_TOKEN_MINT": "6ufHziFb4eogt51BczXurjakWx6mfWygC3DxcvdLgLGM",
     "CONFIG_REWARD_TOKEN_SYMBOL": "CTZN",

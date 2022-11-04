@@ -152,7 +152,7 @@ export const initUserPool = async (wallet: WalletContextState) => {
   try {
     let userPoolKey = await PublicKey.createWithSeed(
       userAddress,
-      "user-pool",
+      GLOBAL_VAULT_NAME,
       program.programId
     );
 
@@ -161,7 +161,7 @@ export const initUserPool = async (wallet: WalletContextState) => {
     let ix = SystemProgram.createAccountWithSeed({
       fromPubkey: userAddress,
       basePubkey: userAddress,
-      seed: "user-pool",
+      seed: GLOBAL_VAULT_NAME,
       newAccountPubkey: userPoolKey,
       lamports: await solConnection.getMinimumBalanceForRentExemption(
         USER_POOL_SIZE
@@ -233,14 +233,14 @@ export const stakeNft = async (
 
   let userPoolKey = await PublicKey.createWithSeed(
     userAddress,
-    "user-pool",
+    GLOBAL_VAULT_NAME,
     program.programId
   );
   console.log(userPoolKey.toString())
   console.log(globalAuthority.toString());
   console.log(lock_period, role, model);
 
-  const [vaultPda, vaultStakeBump] = await PublicKey.findProgramAddress([
+  const [vaultPda] = await PublicKey.findProgramAddress([
     Buffer.from("vault-stake"),
     globalAuthority.toBuffer(),
     userAddress.toBuffer(),
@@ -335,7 +335,7 @@ export const withdrawNft = async (
   // console.log(instructions, "instructions..");
   let userPoolKey = await PublicKey.createWithSeed(
     userAddress,
-    "user-pool",
+    GLOBAL_VAULT_NAME,
     program.programId
   );
 
@@ -420,7 +420,7 @@ export const stakeAllNft = async (
   );
   let userPoolKey = await PublicKey.createWithSeed(
     userAddress,
-    "user-pool",
+    GLOBAL_VAULT_NAME,
     program.programId
   );
   let poolAccount = await solConnection.getAccountInfo(userPoolKey);
@@ -441,8 +441,23 @@ export const stakeAllNft = async (
   // console.log(instructions);
   await Promise.mapSeries(nftList, async ({ mint, role }, idx) => {
     let userTokenAccount = await getAssociatedTokenAccount(userAddress, mint);
-
+    const [vaultPda] = await PublicKey.findProgramAddress([
+      Buffer.from("vault-stake"),
+      globalAuthority.toBuffer(),
+      userAddress.toBuffer(),
+      userTokenAccount.toBuffer()
+    ], program.programId);
     const metadata = await getMetadata(mint);
+    const METADATA_PROGRAM_ID = new PublicKey("metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s");
+    const [edition] = await PublicKey.findProgramAddress(
+      [
+        Buffer.from("metadata"),
+        METADATA_PROGRAM_ID.toBuffer(),
+        mint.toBuffer(),
+        Buffer.from("edition"),
+      ],
+      METADATA_PROGRAM_ID
+    );
     txnMulti.add(
       program.instruction.stakeNftToFixed(
         bump,
@@ -456,6 +471,8 @@ export const stakeAllNft = async (
             globalAuthority,
             userTokenAccount,
             nftMint: mint,
+            vaultPda,
+            edition,
             mintMetadata: metadata,
             tokenProgram: TOKEN_PROGRAM_ID,
             tokenMetadataProgram: METAPLEX,
@@ -482,10 +499,14 @@ export const stakeAllNft = async (
 
   // @ts-ignore
   const signedTxns = await wallet.signAllTransactions(txns);
+  const txSignatures = [];
   for (const tx of signedTxns) {
     const txSignature = await program.provider.connection.sendRawTransaction(tx.serialize());
-    await program.provider.connection.confirmTransaction(txSignature, "finalized");
     console.log(txSignature);
+    txSignatures.push(txSignature);
+  }
+  for (const txSignature of txSignatures) {
+    await program.provider.connection.confirmTransaction(txSignature, "finalized");
   }
 };
 
@@ -515,7 +536,7 @@ export const withdrawAllNft = async (
   // );
   let userPoolKey = await PublicKey.createWithSeed(
     userAddress,
-    "user-pool",
+    GLOBAL_VAULT_NAME,
     program.programId
   );
   let txnMulti = new Transaction();
@@ -531,6 +552,16 @@ export const withdrawAllNft = async (
       userAddress.toBuffer(),
       userTokenAccount.toBuffer()
     ], program.programId);
+    const METADATA_PROGRAM_ID = new PublicKey("metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s");
+    const [edition] = await PublicKey.findProgramAddress(
+      [
+        Buffer.from("metadata"),
+        METADATA_PROGRAM_ID.toBuffer(),
+        mint.toBuffer(),
+        Buffer.from("edition"),
+      ],
+      METADATA_PROGRAM_ID
+    );
     txnMulti.add(
       program.instruction.withdrawNftFromFixed(bump, vaultStakeBump, {
         accounts: {
@@ -538,9 +569,11 @@ export const withdrawAllNft = async (
           userFixedPool: userPoolKey,
           globalAuthority,
           vaultPda,
+          edition,
           userTokenAccount,
           nftMint: mint,
           tokenProgram: TOKEN_PROGRAM_ID,
+          tokenMetadataProgram: METAPLEX,
         },
         instructions: [],
         signers: [],
@@ -564,10 +597,14 @@ export const withdrawAllNft = async (
 
   // @ts-ignore
   const signedTxns = await wallet.signAllTransactions(txns);
+  const txSignatures = [];
   for (const tx of signedTxns) {
     const txSignature = await program.provider.connection.sendRawTransaction(tx.serialize());
-    await program.provider.connection.confirmTransaction(txSignature, "finalized");
     console.log(txSignature);
+    txSignatures.push(txSignature);
+  }
+  for (const txSignature of txSignatures) {
+    await program.provider.connection.confirmTransaction(txSignature, "finalized");
   }
   successAlert("Unstake all has been successfully processed!");
 };
@@ -590,7 +627,7 @@ export const claimRewardAll = async (wallet: WalletContextState) => {
 
   let userPoolKey = await PublicKey.createWithSeed(
     userAddress,
-    "user-pool",
+    GLOBAL_VAULT_NAME,
     program.programId
   );
 
@@ -667,7 +704,7 @@ export const claimReward = async (
 
   let userPoolKey = await PublicKey.createWithSeed(
     userAddress,
-    "user-pool",
+    GLOBAL_VAULT_NAME,
     program.programId
   );
 
@@ -726,7 +763,7 @@ export const getGlobalState = async (): Promise<GlobalPool | null> => {
 export const getUserPoolState = async (
   wallet: WalletContextState
 ): Promise<UserPool | null> => {
-  if (wallet.publicKey === null) return null;
+  if (!wallet.publicKey) return null;
   const userAddress = wallet.publicKey;
   let cloneWindow: any = window;
   let provider = new anchor.Provider(
@@ -735,10 +772,9 @@ export const getUserPoolState = async (
     anchor.Provider.defaultOptions()
   );
   const program = new anchor.Program(IDL as anchor.Idl, PROGRAM_ID, provider);
-
   let userPoolKey = await PublicKey.createWithSeed(
     userAddress,
-    "user-pool",
+    GLOBAL_VAULT_NAME,
     program.programId
   );
   try {
